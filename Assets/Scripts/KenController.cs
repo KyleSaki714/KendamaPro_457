@@ -27,11 +27,8 @@ public class KenController : MonoBehaviour
         float h = horizontalSpeed * Input.GetAxis("Mouse X");
         float v = verticalSpeed * Input.GetAxis("Mouse Y");
 
-        //Debug.Log("horizontalSpeed: " + horizontalSpeed);
-        //Debug.Log("verticalSpeed: " + verticalSpeed);
-
-        transform.Rotate(-v, 0f, -h);
-        //transform.Rotate(0f, 0f, 0f);
+        transform.Rotate(-v, 0f, 0f);
+        //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, -h);
 
         if (Input.GetKeyDown(KeyCode.R))
         {
