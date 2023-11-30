@@ -2,21 +2,26 @@ using System;
 using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PhysicsSimulation : MonoBehaviour
 {
-    public GameObject emitter; // Emits spheres
-    public GameObject sphereGameObject; 
 
+    bool DEBUG = true;
+
+    public GameObject emitter; // Emits spheres
+    public GameObject tamaGameObject;
+
+    [Header("Tama Attributes")]
     // User-defined public variables.
     // These define the properties of an emitter
     public float mass = 0.1f;
     public float scale = 1;
-    public float period = 0.5f;
+    //public float period = 0.5f;
     public Vector3 initialVelocity;
     public Vector3 constantF = new Vector3(0f, -9.8f, 0f);
     public float dragF = 0f;
-    public int maxSpheres = 25;
+    public int maxSpheres = 1;
 
     // Colliders in the scene
     private CustomCollider[] _colliders;
@@ -24,8 +29,8 @@ public class PhysicsSimulation : MonoBehaviour
     // Emitted spheres
     private int _numSpheres;
     private int _sphereIndex;
-    private List<Sphere> _spheres;
-    private double _timeToEmit;
+    private List<Tama> _spheres;
+    //private double _timeToEmit;
     
     // Forces
     private List<IForce> _forces;
@@ -38,7 +43,7 @@ public class PhysicsSimulation : MonoBehaviour
         _numSpheres = 0;
         _sphereIndex = 0;
         _colliders = FindObjectsOfType<CustomCollider>();
-        _spheres = new List<Sphere>();
+        _spheres = new List<Tama>();
 
         _constantForce = new ConstantForce(constantF);
         _viscousDragForce = new ViscousDragForce(dragF);
@@ -47,18 +52,37 @@ public class PhysicsSimulation : MonoBehaviour
             _constantForce,
             _viscousDragForce
         };
+
+        EmitTama();
+    }
+
+    private void Update()
+    {
+        if (DEBUG)
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                EmitTama();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+            }
+
+        }
     }
 
     // Emits spheres, compute their position and velocity, and check for collisions
     private void FixedUpdate()
     {
-        float deltaTime = Time.deltaTime;
+        //float deltaTime = Time.deltaTime;
         // Emit spheres
-        _timeToEmit -= deltaTime;
-        if (_timeToEmit <= 0.0) EmitSpheres();
+        //_timeToEmit -= deltaTime;
+        //if (_timeToEmit <= 0.0) EmitSpheres();
 
         
-        foreach (Sphere sphere in _spheres) // For each sphere 
+        foreach (Tama sphere in _spheres) // For each sphere 
         {
             // Compute their position and velocity by solving the system of forces using Euler's method
             ComputeSphereMovement(sphere, _forces);
@@ -69,20 +93,26 @@ public class PhysicsSimulation : MonoBehaviour
                 OnCollision(sphere, customCollider);
             }
         }
+
+
+
     }
 
-    private void EmitSpheres()
+    private void EmitTama()
     {
         // Initialize local position of a sphere
         Vector3 localPos = new Vector3(0f, 0f, 0f);
         Vector3 localVelocity = initialVelocity;
 
         // Get the world position of a sphere
-        Vector3 worldPos = emitter.transform.TransformPoint(localPos);
+        //Vector3 worldPos = emitter.transform.TransformPoint(localPos);
+        Vector3 worldPos = emitter.transform.position;
         Vector3 worldVelocity = emitter.transform.TransformDirection(localVelocity);
 
+
+
         // Initialize a sphere 
-        Sphere sphere = new Sphere(mass, scale, worldPos, worldVelocity, sphereGameObject);
+        Tama sphere = new Tama(mass, scale, worldPos, worldVelocity, tamaGameObject);
 
         if (_numSpheres < maxSpheres)
         {
@@ -92,8 +122,8 @@ public class PhysicsSimulation : MonoBehaviour
         }
         else
         {
-            Sphere destroy = _spheres[_sphereIndex];
-            Destroy(destroy.SphereGameObject);
+            Tama destroy = _spheres[_sphereIndex];
+            Destroy(destroy.TamaGameObject);
             // Keep the number of sphere to a finite amount by just replacing the old sphere
             _spheres[_sphereIndex++] = sphere;
             // If the end is reached, reset the index to start remove the index-0 sphere
@@ -102,10 +132,10 @@ public class PhysicsSimulation : MonoBehaviour
         }
 
         // Reset the time
-        _timeToEmit = period;
+        //_timeToEmit = period;
     }
 
-    public static void ComputeSphereMovement(Sphere ball, List<IForce> forces)
+    public static void ComputeSphereMovement(Tama ball, List<IForce> forces)
     {
         // TODO: Calculate the ball's position and velocity by solving the system
         // of forces using Euler's method
@@ -132,10 +162,10 @@ public class PhysicsSimulation : MonoBehaviour
         ball.Position = pEuler;
 
         // Update the transform of the actual game object
-        ball.SphereGameObject.transform.position = pEuler;
+        ball.TamaGameObject.transform.position = pEuler;
     }
 
-    public static bool OnCollision(Sphere ball, CustomCollider customCollider)
+    public static bool OnCollision(Tama ball, CustomCollider customCollider)
     {
         Transform colliderTransform = customCollider.transform;
         Vector3 colliderSize = colliderTransform.lossyScale; // size of collider
@@ -178,87 +208,6 @@ public class PhysicsSimulation : MonoBehaviour
             normal = ballDir;
 
         }
-        else if (customCollider.CompareTag("PlaneCollider"))
-        {
-            // Collision with a plane collider
-
-            var planeHeight = colliderSize.x * 10; // height of plane, defined by the x-scale
-            var planeWidth = colliderSize.z * 10; // width of plane, defined by the z-scale
-            // Note: In Unity, a plane's actual size is its inspector values times 10.
-
-            // TODO: Detect sphere collision with a plane collider
-
-            float planeHalfHeight = planeHeight / 2f;
-            float planeHalfWidth = planeWidth / 2f;
-
-            // if ball is within the plane
-            bool withinPlane = (localPos.x > -planeHalfHeight && localPos.x < planeHalfHeight &&
-                localPos.z > -planeHalfWidth && localPos.z < planeHalfWidth);
-            if (withinPlane)
-            {
-                normal = Vector3.up;
-            }
-            // edge case
-            else if (!withinPlane &&
-                    (localPos.x > -planeHalfHeight - 0.5f && localPos.x < planeHalfHeight + 0.5f &&
-                        localPos.z > -planeHalfWidth - 0.5f && localPos.z < planeHalfWidth + 0.5f))
-            {
-                Vector3 edgePoint = Vector3.zero;
-
-                if (localPos.x > planeHalfHeight)
-                {
-                    edgePoint.x = planeHalfHeight;
-                    edgePoint.z = localPos.z;
-                }
-                else if (localPos.x < -planeHalfHeight)
-                {
-                    edgePoint.x = -planeHalfHeight;
-                    edgePoint.z = localPos.z;
-                }
-                else if (localPos.z < -planeHalfWidth)
-                {
-                    edgePoint.z = -planeHalfWidth;
-                    edgePoint.x = localPos.x;
-                }
-                else
-                {
-                    edgePoint.z = planeHalfWidth;
-                    edgePoint.x = localPos.x;
-                }
-
-                normal = (localPos - edgePoint).normalized;
-            } 
-            else
-            {
-                colliderTransform.localScale = curLocalScale;
-                return false;
-            }
-
-            float dn = Vector3.Dot(localPos, normal);
-            collisionOccurred = ballRadius - dn >= 0f;
-
-            if (collisionOccurred)
-            {
-                float ballToSurface = Vector3.Dot(normal, ball.Velocity);
-                isEntering = ballToSurface < 0f;
-            }
-
-            // Generally, when the sphere is moving on the plane, the restitution alone is not enough
-            // to counter gravity and the ball will eventually sink. We solve this by ensuring that
-            // the ball stays above the plane.
-            if (collisionOccurred && isEntering)
-            {
-                // TODO: Follow these steps to ensure the sphere always on top of the plane.
-                //   1. Find the new localPos of the ball that is always on the plane
-                //   2. Convert the localPos to worldPos
-                //   3. Update the sphere's position with the new value
-                Vector3 d = (ballRadius - dn) * normal;
-                Vector3 ballOnPlane = localPos + d;
-                ball.Position = colliderTransform.TransformPoint(ballOnPlane);
-
-            }
-        }
-
 
         if (collisionOccurred && isEntering)
         {

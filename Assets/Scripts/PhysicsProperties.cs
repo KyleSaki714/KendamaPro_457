@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 
-public class Sphere {
+public class Tama {
     public float Mass;
     public float Scale;
     public Vector3 Position;
     public Vector3 Velocity;
-    public GameObject SphereGameObject;
+    public GameObject TamaGameObject;
     
-    public Sphere(float mass, float scale, Vector3 position, Vector3 velocity, GameObject sphere) {
+    public Tama(float mass, float scale, Vector3 position, Vector3 velocity, GameObject sphere) {
         Mass = mass;
         Scale = scale;
         Position = position;
         Velocity = velocity;
-        SphereGameObject = Object.Instantiate(sphere, Position, Quaternion.identity);
+        TamaGameObject = Object.Instantiate(sphere, Position, Quaternion.identity);
         PhysicsSimulation.SetWorldScale(sphere.transform, new Vector3(scale, scale, scale));
     }
 }
 
 public interface IForce {
-    public abstract Vector3 GetForce(Sphere p);
+    public abstract Vector3 GetForce(Tama p);
 }
 
 public class ConstantForce : IForce {
@@ -28,7 +28,7 @@ public class ConstantForce : IForce {
         _force = force;
     }
 
-    public Vector3 GetForce(Sphere p) {
+    public Vector3 GetForce(Tama p) {
         return  _force;
     }
 
@@ -49,7 +49,7 @@ public class ViscousDragForce : IForce {
     }
 
     // return the drag force given a sphere with velocity v
-    public Vector3 GetForce(Sphere p) {
+    public Vector3 GetForce(Tama p) {
         Vector3 force = -_drag * p.Velocity; 
 
         return force;

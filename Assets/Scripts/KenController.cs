@@ -13,6 +13,8 @@ public class KenController : MonoBehaviour
     private float verticalSpeed = 2.81f;
     //Vector3 startRotation;
 
+    float kendamaSwingUp;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,15 +26,18 @@ public class KenController : MonoBehaviour
     void Update()
     {
         // Get the mouse delta. This is not in the range -1...1
-        float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        float v = verticalSpeed * Input.GetAxis("Mouse Y");
+        //float h = horizontalSpeed * Input.GetAxis("Mouse X");
+        kendamaSwingUp = verticalSpeed * Input.GetAxis("Mouse Y");
 
-        transform.Rotate(-v, 0f, 0f);
+        transform.Rotate(-kendamaSwingUp, 0f, 0f);
+    }
+
+    void FixedUpdate()
+    {
+
+
         //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, -h);
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
-        }
+
     }
 }
