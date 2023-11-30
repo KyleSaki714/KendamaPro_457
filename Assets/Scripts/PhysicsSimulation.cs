@@ -208,6 +208,86 @@ public class PhysicsSimulation : MonoBehaviour
             normal = ballDir;
 
         }
+        else if (customCollider.CompareTag("PlaneCollider"))
+        {
+            // Collision with a plane collider
+
+            var planeHeight = colliderSize.x * 10; // height of plane, defined by the x-scale
+            var planeWidth = colliderSize.z * 10; // width of plane, defined by the z-scale
+            // Note: In Unity, a plane's actual size is its inspector values times 10.
+
+            // TODO: Detect sphere collision with a plane collider
+
+            float planeHalfHeight = planeHeight / 2f;
+            float planeHalfWidth = planeWidth / 2f;
+
+            // if ball is within the plane
+            bool withinPlane = (localPos.x > -planeHalfHeight && localPos.x < planeHalfHeight &&
+                localPos.z > -planeHalfWidth && localPos.z < planeHalfWidth);
+            if (withinPlane)
+            {
+                normal = Vector3.up;
+            }
+            // edge case
+            else if (!withinPlane &&
+                    (localPos.x > -planeHalfHeight - 0.5f && localPos.x < planeHalfHeight + 0.5f &&
+                        localPos.z > -planeHalfWidth - 0.5f && localPos.z < planeHalfWidth + 0.5f))
+            {
+                Vector3 edgePoint = Vector3.zero;
+
+                if (localPos.x > planeHalfHeight)
+                {
+                    edgePoint.x = planeHalfHeight;
+                    edgePoint.z = localPos.z;
+                }
+                else if (localPos.x < -planeHalfHeight)
+                {
+                    edgePoint.x = -planeHalfHeight;
+                    edgePoint.z = localPos.z;
+                }
+                else if (localPos.z < -planeHalfWidth)
+                {
+                    edgePoint.z = -planeHalfWidth;
+                    edgePoint.x = localPos.x;
+                }
+                else
+                {
+                    edgePoint.z = planeHalfWidth;
+                    edgePoint.x = localPos.x;
+                }
+
+                normal = (localPos - edgePoint).normalized;
+            }
+            else
+            {
+                colliderTransform.localScale = curLocalScale;
+                return false;
+            }
+
+            float dn = Vector3.Dot(localPos, normal);
+            collisionOccurred = ballRadius - dn >= 0f;
+
+            if (collisionOccurred)
+            {
+                float ballToSurface = Vector3.Dot(normal, ball.Velocity);
+                isEntering = ballToSurface < 0f;
+            }
+
+            // Generally, when the sphere is moving on the plane, the restitution alone is not enough
+            // to counter gravity and the ball will eventually sink. We solve this by ensuring that
+            // the ball stays above the plane.
+            if (collisionOccurred && isEntering)
+            {
+                // TODO: Follow these steps to ensure the sphere always on top of the plane.
+                //   1. Find the new localPos of the ball that is always on the plane
+                //   2. Convert the localPos to worldPos
+                //   3. Update the sphere's position with the new value
+                Vector3 d = (ballRadius - dn) * normal;
+                Vector3 ballOnPlane = localPos + d;
+                ball.Position = colliderTransform.TransformPoint(ballOnPlane);
+
+            }
+        }
 
         if (collisionOccurred && isEntering)
         {
