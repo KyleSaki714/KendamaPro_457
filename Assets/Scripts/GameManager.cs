@@ -71,12 +71,25 @@ public class GameManager : MonoBehaviour
         // while in a rally (tama hasn't touched the ground)
         if (isRallying) 
         {
+            // calculate velocity
+
+
+
             // check for touching the ground
             if (currentTama.TamaGameObject.transform.position.y < ground.transform.position.y + tamaGroundTouchThreshold)
             {
                 Debug.Log("tricks failed! rally over");
                 isRallying=false;
                 tamaEmitter.ShowDecoy();
+            }
+
+            // check tama on bigCup
+            // TODO: also check ken Z rotation and tama velocity
+            if (Vector3.Distance(currentTama.TamaGameObject.transform.position, kenController.gameObject.transform.GetChild(1).transform.position) < 0.5f &&
+                Mathf.Abs(kenController.gameObject.transform.rotation.z) < 40f) //&&
+                //currentTama.TamaGameObject.transform)
+            {
+                Debug.Log("big cup");
             }
         }
 

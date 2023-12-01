@@ -17,8 +17,6 @@ public class TamaEmitter : MonoBehaviour
     private Transform bigCupTransform;
     private GameObject gameManager;
 
-    private bool decoyShown = false;
-
     [Header("Tama Attributes")]
     // User-defined public variables.
     // These define the properties of an emitter
@@ -336,13 +334,11 @@ public class TamaEmitter : MonoBehaviour
 
     public void ShowDecoy()
     {
-        decoyShown = true;
         transform.GetChild(0).gameObject.SetActive(true);
     }
 
     public void HideDecoy()
     {
-        decoyShown = false;
         transform.GetChild(0).gameObject.SetActive(false);
     }
 }
