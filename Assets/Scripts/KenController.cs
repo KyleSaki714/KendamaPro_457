@@ -7,17 +7,17 @@ using UnityEngine.SceneManagement;
 public class KenController : MonoBehaviour
 {
 
-    [SerializeField]
-    private float horizontalSpeed = 4.43f;
-    [SerializeField]
-    private float verticalSpeed = 2.81f;
-    //Vector3 startRotation;
+    // references
+    GameManager gameManager;
 
-    float kendamaSwingUp;
+    private void Awake()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
 
-    // Start is called before the first frame update
     void Start()
     {
+
         //startRotation = new(0f, 90f, 90f);
         //transform.rotation = Quaternion.Euler(startRotation);
     }
@@ -27,9 +27,16 @@ public class KenController : MonoBehaviour
     {
         // Get the mouse delta. This is not in the range -1...1
         //float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        kendamaSwingUp = verticalSpeed * Input.GetAxis("Mouse Y");
+        if (gameManager.verticalSwingOn)
+        {
+            transform.Rotate(-gameManager.mouseVertVel, 0f, 0f);
+        }
+        else
+        {
+            transform.Rotate(0f, 0f, -gameManager.mouseHoriVel);
+        }
 
-        transform.Rotate(-kendamaSwingUp, 0f, 0f);
+
     }
 
     void FixedUpdate()
@@ -40,4 +47,8 @@ public class KenController : MonoBehaviour
 
 
     }
+
+
+    
+
 }

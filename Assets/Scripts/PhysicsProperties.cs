@@ -13,7 +13,8 @@ public class Tama {
         Position = position;
         Velocity = velocity;
         TamaGameObject = Object.Instantiate(sphere, Position, Quaternion.identity);
-        PhysicsSimulation.SetWorldScale(sphere.transform, new Vector3(scale, scale, scale));
+        TamaGameObject.tag = "Tama";
+        TamaEmitter.SetWorldScale(sphere.transform, new Vector3(scale, scale, scale));
     }
 }
 

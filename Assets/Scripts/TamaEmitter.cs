@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
-public class PhysicsSimulation : MonoBehaviour
+public class TamaEmitter : MonoBehaviour
 {
 
     bool DEBUG = true;
 
     public GameObject emitter; // Emits spheres
     public GameObject tamaGameObject;
+
+    // references to other objects in scene
+    private Transform bigCupTransform;
+    private GameObject gameManager;
 
     [Header("Tama Attributes")]
     // User-defined public variables.
@@ -37,6 +42,12 @@ public class PhysicsSimulation : MonoBehaviour
     private ConstantForce _constantForce;
     private ViscousDragForce _viscousDragForce;
 
+    private void Awake()
+    {
+        gameManager = GameObject.Find("GameManager");
+        bigCupTransform = GameObject.Find("BigCup").gameObject.transform;
+    }
+
     // Initialize data
     private void Start()
     {
@@ -53,7 +64,11 @@ public class PhysicsSimulation : MonoBehaviour
             _viscousDragForce
         };
 
-        EmitTama();
+        // align x and z pos with the big cup
+        transform.position = new Vector3(bigCupTransform.position.x, transform.position.y, bigCupTransform.position.z);
+        
+        // show decoy
+        transform.GetChild(0).gameObject.SetActive(true);
     }
 
     private void Update()
@@ -98,19 +113,20 @@ public class PhysicsSimulation : MonoBehaviour
 
     }
 
-    private void EmitTama()
+    public Tama EmitTama()
     {
-        // Initialize local position of a sphere
-        Vector3 localPos = new Vector3(0f, 0f, 0f);
         Vector3 localVelocity = initialVelocity;
 
         // Get the world position of a sphere
         //Vector3 worldPos = emitter.transform.TransformPoint(localPos);
-        Vector3 worldPos = emitter.transform.position;
+        Vector3 worldPos = transform.position;
         Vector3 worldVelocity = emitter.transform.TransformDirection(localVelocity);
 
+        return EmitTama(mass, scale, worldPos, worldVelocity);
+    }
 
-
+    public Tama EmitTama(float mass, float scale, Vector3 worldPos, Vector3 worldVelocity)
+    {
         // Initialize a sphere 
         Tama sphere = new Tama(mass, scale, worldPos, worldVelocity, tamaGameObject);
 
@@ -131,8 +147,7 @@ public class PhysicsSimulation : MonoBehaviour
                 _sphereIndex = 0;
         }
 
-        // Reset the time
-        //_timeToEmit = period;
+        return sphere;
     }
 
     public static void ComputeSphereMovement(Tama ball, List<IForce> forces)
