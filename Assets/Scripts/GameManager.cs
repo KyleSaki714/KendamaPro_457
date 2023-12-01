@@ -20,8 +20,10 @@ public class GameManager : MonoBehaviour
     
     // ball has just been launched in air and not fallen to the ground (lose)
     private bool isRallying;
+    [SerializeField]
     private float swingUpThreshold = 4.15f;
     [SerializeField]
+    private float mouseVelMax = 10f;
     private float tamaSwingUpMultiplier = 1f;
     private bool hasSwungUp = false; // swing up has just been executed.
 
@@ -74,6 +76,7 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("tricks failed! rally over");
                 isRallying=false;
+                tamaEmitter.ShowDecoy();
             }
         }
 
@@ -90,8 +93,10 @@ public class GameManager : MonoBehaviour
         // check swing up. must meet velocity, hasn't just swing up, and hasn't failed any tricks yet.
         if (mouseVertVel > swingUpThreshold && !hasSwungUp && !isRallying)
         {
+            
             KenSwingUp();
-            Debug.Log("Mouse Swing Up! " + mouseVertVel);
+            
+
         }
 
         // check swing down (reset hasSwungUp)
@@ -120,11 +125,20 @@ public class GameManager : MonoBehaviour
     // is called upon the swing of the ken, and the launch of the tama.
     void KenSwingUp()
     {
+        //while (mouseVertVel < 1f)
+        //{
+        //    yield return null;
+        //    Debug.Log("waiting");
+        //}
+
         hasSwungUp = true;
         isRallying = true;
 
+        // clamp velocity value
+        float mouseVelClamp = Mathf.Clamp(mouseVertVel, 0f, mouseVelMax);
+        Debug.Log("Mouse Swing Up! " + mouseVelClamp);
         // take the velocity from the mouse
-        Vector3 tamaVelocity = new(0f, mouseVertVel * tamaSwingUpMultiplier, 0f);
+        Vector3 tamaVelocity = new(0f, mouseVelClamp * tamaSwingUpMultiplier, 0f);
         // pos from emitter
         currentTama = tamaEmitter.EmitTama(tamaEmitter.mass, tamaEmitter.scale, tamaEmitter.transform.position, tamaVelocity);
         

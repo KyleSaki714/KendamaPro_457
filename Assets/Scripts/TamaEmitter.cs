@@ -17,6 +17,8 @@ public class TamaEmitter : MonoBehaviour
     private Transform bigCupTransform;
     private GameObject gameManager;
 
+    private bool decoyShown = false;
+
     [Header("Tama Attributes")]
     // User-defined public variables.
     // These define the properties of an emitter
@@ -65,10 +67,10 @@ public class TamaEmitter : MonoBehaviour
         };
 
         // align x and z pos with the big cup
-        transform.position = new Vector3(bigCupTransform.position.x, transform.position.y, bigCupTransform.position.z);
-        
+        //transform.position = new Vector3(bigCupTransform.position.x, transform.position.y, bigCupTransform.position.z);
+
         // show decoy
-        transform.GetChild(0).gameObject.SetActive(true);
+        ShowDecoy();
     }
 
     private void Update()
@@ -86,6 +88,7 @@ public class TamaEmitter : MonoBehaviour
             }
 
         }
+        transform.position = bigCupTransform.position;
     }
 
     // Emits spheres, compute their position and velocity, and check for collisions
@@ -127,6 +130,8 @@ public class TamaEmitter : MonoBehaviour
 
     public Tama EmitTama(float mass, float scale, Vector3 worldPos, Vector3 worldVelocity)
     {
+        HideDecoy();
+
         // Initialize a sphere 
         Tama sphere = new Tama(mass, scale, worldPos, worldVelocity, tamaGameObject);
 
@@ -327,5 +332,17 @@ public class TamaEmitter : MonoBehaviour
         Vector3 lossyScale = transform.lossyScale;
         transform.localScale = new Vector3(worldScale.x / lossyScale.x, worldScale.y / lossyScale.y,
             worldScale.z / lossyScale.z);
+    }
+
+    public void ShowDecoy()
+    {
+        decoyShown = true;
+        transform.GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void HideDecoy()
+    {
+        decoyShown = false;
+        transform.GetChild(0).gameObject.SetActive(false);
     }
 }
