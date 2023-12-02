@@ -32,4 +32,5 @@ public class GameManager : MonoBehaviour
         kenController = GameObject.Find("Ken").GetComponent<KenController>();
         ground = GameObject.Find("Ground");
     }
+}
 
