@@ -7,35 +7,26 @@ using UnityEngine.SceneManagement;
 public class KenController : MonoBehaviour
 {
 
-    // references
-    GameManager gameManager;
-
-    private void Awake()
-    {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-    }
-
-    void Start()
-    {
-
-        //startRotation = new(0f, 90f, 90f);
-        //transform.rotation = Quaternion.Euler(startRotation);
-    }
+    private Vector3 _screenPosition;
+    private Vector3 _worldPosition;
+    private Plane plane = new Plane(Vector3.back, 0);
 
     // Update is called once per frame
     void Update()
     {
-        // Get the mouse delta. This is not in the range -1...1
-        //float h = horizontalSpeed * Input.GetAxis("Mouse X");
-        if (gameManager.verticalSwingOn)
+        _screenPosition = Input.mousePosition;
+
+        Ray ray = Camera.main.ScreenPointToRay(_screenPosition);
+
+        if (plane.Raycast(ray, out float distance))
         {
-            transform.Rotate(-gameManager.mouseVertVel, 0f, 0f);
-        }
-        else
-        {
-            transform.Rotate(0f, 0f, -gameManager.mouseHoriVel);
+            _worldPosition = ray.GetPoint(distance);
         }
 
+        transform.position = _worldPosition;
+
+        //startRotation = new(0f, 90f, 90f);
+        //transform.rotation = Quaternion.Euler(startRotation);
 
     }
 
