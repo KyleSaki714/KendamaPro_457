@@ -31,6 +31,11 @@ public class RopeRoot : MonoBehaviour
 
     private void AddChildren(Transform parent)
     {
+        if (parent.gameObject.name == "Bone.021_end")
+        {
+            Debug.Log(parent.gameObject.name);
+        }
+
         for (int i = 0; i < parent.childCount; i++)
         {
             var child = parent.GetChild(i);
