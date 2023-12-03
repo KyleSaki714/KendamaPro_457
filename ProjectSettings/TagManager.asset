@@ -7,6 +7,7 @@ TagManager:
   - SphereCollider
   - PlaneCollider
   - Tama
+  - Cup
   layers:
   - Default
   - TransparentFX

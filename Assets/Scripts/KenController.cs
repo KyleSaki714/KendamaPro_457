@@ -28,6 +28,7 @@ public class KenController : MonoBehaviour
         //startRotation = new(0f, 90f, 90f);
         //transform.rotation = Quaternion.Euler(startRotation);
 
+
     }
 
     void FixedUpdate()
