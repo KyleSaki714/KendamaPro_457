@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TamaPhysics : MonoBehaviour
@@ -40,6 +41,14 @@ public class TamaPhysics : MonoBehaviour
     {
         lastMousePos = Input.mousePosition;
         rb = GetComponent<Rigidbody>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown((int) MouseButton.Left))
+        {
+            tamaLaunch();
+        }
     }
 
     void FixedUpdate()
@@ -122,7 +131,7 @@ public class TamaPhysics : MonoBehaviour
         cupSit = false;
         kenCollision = false;
         currentCup = null;
-        rb.AddRelativeForce(new Vector3(0f, tamaLaunchMultiplier, 0f), ForceMode.Impulse);
+        rb.AddForce(new Vector3(0f, tamaLaunchMultiplier, 0f), ForceMode.Impulse);
         Debug.Log("launched tama from cup: " + (rb.velocity + lastPosMouseDelta.normalized * tamaLaunchMultiplier));
     }
 
