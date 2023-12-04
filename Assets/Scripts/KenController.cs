@@ -11,15 +11,16 @@ public class KenController : MonoBehaviour
     private Vector3 _worldPosition;
     private Plane plane = new Plane(Vector3.back, 0);
 
-    private Rigidbody kenrb;
+    private Rigidbody cups;
+    private Rigidbody spikeBase;
 
     [SerializeField]
     private float kenRotationVel = 5f;
 
     private void Start()
     {
-        kenrb = GetComponentInChildren<Rigidbody>();
-
+        cups = transform.Find("model/lowpoly_kendama/ken_cups").GetComponent<Rigidbody>();
+        spikeBase = transform.Find("model/lowpoly_kendama/ken_base").GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -35,41 +36,26 @@ public class KenController : MonoBehaviour
         }
 
         transform.position = _worldPosition;
+        //moveKen(_worldPosition);
 
         //startRotation = new(0f, 90f, 90f);
 
-
-
-        
-
-        //transform.rotation = Quaternion.Euler(startRotation);
-
-
-    }
-
-    void FixedUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
-            Quaternion deltaRotation = Quaternion.Euler(kenRotationVel * Time.fixedDeltaTime * Vector3.right);
-            kenrb.MoveRotation(kenrb.rotation * deltaRotation);
-            //Vector3 newRot = new Vector3(kenrb.rotation.x + kenRotationVel, kenrb.rotation.y, kenrb.rotation.z);
-            //kenrb.MoveRotation(Quaternion.Euler(newRot));
+            transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, kenRotationVel));
         }
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
-            Quaternion deltaRotation = Quaternion.Euler(-kenRotationVel * Time.fixedDeltaTime * Vector3.right);
-            kenrb.MoveRotation(kenrb.rotation * deltaRotation);
-            //Vector3 newRot = new Vector3(kenrb.rotation.x - kenRotationVel, kenrb.rotation.y, kenrb.rotation.z);
-            //kenrb.MoveRotation(Quaternion.Euler(newRot));
+            transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, -kenRotationVel));
         }
-
-        //transform.rotation = Quaternion.Euler(transform.rotation.x, transform.rotation.y, -h);
-
-
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(-180f, 0f, 0f));
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+        }
     }
-
-
-    
 
 }
