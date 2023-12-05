@@ -17,6 +17,9 @@ public class RopeRoot : MonoBehaviour
     protected List<Transform> CopyDestination;
     protected static GameObject RigidBodyContainer;
 
+    private Rigidbody end;
+    private Rigidbody ball;
+
     void Awake()
     {
         if (RigidBodyContainer == null)
@@ -27,6 +30,9 @@ public class RopeRoot : MonoBehaviour
 
         //add children
         AddChildren(transform);
+
+        end = GameObject.Find("Bone.021_end").GetComponent<Rigidbody>();
+        ball = GameObject.Find("TestSphere").GetComponent<Rigidbody>();
     }
 
     private void AddChildren(Transform parent)
@@ -77,5 +83,7 @@ public class RopeRoot : MonoBehaviour
             CopyDestination[i].position = CopySource[i].position + PositionOffset;
             CopyDestination[i].rotation = CopySource[i].rotation * Quaternion.Euler(RotationOffset);
         }
+
+        end.position = ball.position;
     }
 }
