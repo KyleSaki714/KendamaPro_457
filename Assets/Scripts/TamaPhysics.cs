@@ -10,26 +10,27 @@ public class TamaPhysics : MonoBehaviour
 
     bool kenCollision = false; // make sure tama actually collides with the ken
     float cupLandRotThreshold = 40f;
+    [SerializeField]
     float tamaCupSitOffset = 0.7f;
     bool cupSit = false;
     Collider currentCup;
 
     Transform kenTransform;
     Vector3 kenEuler;
+    KenController kenController;
 
     Vector3 lastMousePos;
-    Vector3 lastPosMouseDelta;
-    public Vector3 mouseDelta
-    {
-	    get
-	    {
-		    return Input.mousePosition - lastMousePos;
-	    }
-    }
+    [SerializeField]
+    Vector3 lastMouseDelta;
+    [SerializeField]
+    Vector3 mouseDelta;
+
     [SerializeField]
     float tamaLaunchThreshold = 20f;
     [SerializeField]
     float tamaLaunchMultiplier = 1f;
+    [SerializeField]
+    Vector3 tamaLaunchAngle;
 
 
     private void Awake()
@@ -41,6 +42,7 @@ public class TamaPhysics : MonoBehaviour
     {
         lastMousePos = Input.mousePosition;
         rb = GetComponent<Rigidbody>();
+        kenController = kenTransform.GetComponent<KenController>();
     }
 
     private void Update()
@@ -49,15 +51,25 @@ public class TamaPhysics : MonoBehaviour
         {
             tamaLaunch();
         }
+        if (Input.GetMouseButtonDown((int) MouseButton.Right))
+        {
+            transform.position = kenTransform.position;
+        }
     }
 
     void FixedUpdate()
     {
+        // get kendama euler angles
         kenEuler = kenTransform.rotation.eulerAngles;
 
-        Debug.Log("mousedelta: " + mouseDelta);
-        Debug.Log("lastPosMouseDelta: " + lastPosMouseDelta);
-        
+        // get launch angle for tama, based on kendama rotation angle (z axis)
+        // add 90 degrees to offset
+        tamaLaunchAngle = new Vector3(Mathf.Sin(kenTransform.rotation.eulerAngles.z),
+                                      Mathf.Cos(kenTransform.rotation.eulerAngles.z),
+                                      0f);
+
+        // get the current mouse velocity
+        mouseDelta = Input.mousePosition - lastMousePos;
 
         if (cupSit)
         {
@@ -65,14 +77,17 @@ public class TamaPhysics : MonoBehaviour
             {
                 Transform currCupTransform = currentCup.transform;
                 Vector3 cupOffset = currCupTransform.up.normalized * tamaCupSitOffset;
-                //transform.position = currCupTransform.position + cupOffset;
                 rb.MovePosition(currCupTransform.position + cupOffset);
+                rb.freezeRotation = true;
 
                 // if launched, break out of cup
-                Debug.Log("mousedelta is 0: " + (mouseDelta == Vector3.zero));
-                Debug.Log("lastPosMouseDelta.y > tamaLaunchThreshold: " + (lastPosMouseDelta.y > tamaLaunchThreshold));
-                if (mouseDelta == Vector3.zero && lastPosMouseDelta.y > tamaLaunchThreshold)
+                if (mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
                 {
+                    kenController.pauseCollision(currentCup);
+                    kenCollision = false;
+                    cupSit = false;
+                    currentCup = null;
+                    rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
                     tamaLaunch();
                 }
             }
@@ -83,35 +98,29 @@ public class TamaPhysics : MonoBehaviour
 
         }
 
-        lastPosMouseDelta = mouseDelta;
+        lastMouseDelta = mouseDelta;
         lastMousePos = Input.mousePosition;
     }
 
     private void OnCollisionStay(Collision collision)
     {
+        // if tama is actually touching the ken
         if (collision.gameObject.name == "ken_cups" ||  collision.gameObject.name == "ken_base")
         {
             kenCollision = true;
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-
+        // if tama is in the area of the cup
         if (other.transform.CompareTag("Cup"))
         {
-
-            Transform cupTransform = other.gameObject.transform;
-
-            if (Mathf.Abs(kenEuler.x) <= cupLandRotThreshold && kenCollision == true)
+            if (kenCollision == true && Mathf.Abs(kenEuler.x) <= cupLandRotThreshold)
             {
-                Debug.Log("trigger enter: " + cupTransform.name);
                 cupSit = true;
                 currentCup = other;
-
             }
-
-
         }
     }
 
@@ -128,11 +137,10 @@ public class TamaPhysics : MonoBehaviour
 
     void tamaLaunch()
     {
-        cupSit = false;
-        kenCollision = false;
-        currentCup = null;
-        rb.AddForce(new Vector3(0f, tamaLaunchMultiplier, 0f), ForceMode.Impulse);
-        Debug.Log("launched tama from cup: " + (rb.velocity + lastPosMouseDelta.normalized * tamaLaunchMultiplier));
+        //rb.AddForce(tamaLaunchMultiplier * tamaLaunchAngle.normalized, ForceMode.Impulse);
+        rb.AddForce(tamaLaunchMultiplier * Vector3.up, ForceMode.Impulse);
+        Debug.Log("launched tama from cup: " + (tamaLaunchMultiplier * tamaLaunchAngle.normalized));
     }
+
 
 }

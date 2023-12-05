@@ -36,7 +36,6 @@ public class KenController : MonoBehaviour
         }
 
         transform.position = _worldPosition;
-        //moveKen(_worldPosition);
 
         //startRotation = new(0f, 90f, 90f);
 
@@ -48,6 +47,11 @@ public class KenController : MonoBehaviour
         {
             transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, -kenRotationVel));
         }
+
+        float zrot = transform.rotation.eulerAngles.z;
+        
+
+
         if (Input.GetKeyDown(KeyCode.S))
         {
             transform.rotation = Quaternion.Euler(new Vector3(-180f, 0f, 0f));
@@ -58,4 +62,22 @@ public class KenController : MonoBehaviour
         }
     }
 
+    // ask the ken to pause collision for a given collider.
+    // danger: collider being passed in is assumed to be one of the colliders in ken
+    public void pauseCollision(Collider coll)
+    {
+        StartCoroutine(TempDisableCollision(coll));
+    }
+
+    // disable collision for half a second
+    IEnumerator TempDisableCollision(Collider collider)
+    {
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("temp disable collission");
+        collider.enabled = false;
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("colision enabled");
+        collider.enabled = true;
+
+    }
 }
