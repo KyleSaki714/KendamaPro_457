@@ -31,6 +31,7 @@ public class TamaPhysics : MonoBehaviour
     float tamaLaunchMultiplier = 1f;
     [SerializeField]
     Vector3 tamaLaunchAngle;
+    bool isLaunching;
 
 
     private void Awake()
@@ -49,7 +50,7 @@ public class TamaPhysics : MonoBehaviour
     {
         if (Input.GetMouseButtonDown((int) MouseButton.Left))
         {
-            tamaLaunch();
+            StartCoroutine(TamaLaunchLockAcquire());
         }
         if (Input.GetMouseButtonDown((int) MouseButton.Right))
         {
@@ -73,28 +74,19 @@ public class TamaPhysics : MonoBehaviour
 
         if (cupSit)
         {
-            if (checkLandBigCup())
-            {
-                Transform currCupTransform = currentCup.transform;
-                Vector3 cupOffset = currCupTransform.up.normalized * tamaCupSitOffset;
-                rb.MovePosition(currCupTransform.position + cupOffset);
-                rb.freezeRotation = true;
 
-                // if launched, break out of cup
-                if (mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
-                {
-                    kenController.pauseCollision(currentCup);
-                    kenCollision = false;
-                    cupSit = false;
-                    currentCup = null;
-                    rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
-                    tamaLaunch();
-                }
-            }
-            else
+            Transform currCupTransform = currentCup.transform;
+            Vector3 cupOffset = currCupTransform.up.normalized * tamaCupSitOffset;
+            rb.MovePosition(currCupTransform.position + cupOffset);
+            rb.freezeRotation = true;
+
+            // if launched, break out of cup
+            if (!isLaunching && mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
             {
-                cupSit = false;
+                StartCoroutine(TamaLaunchLockAcquire());
             }
+
+            // check rotation of ken?
 
         }
 
@@ -124,23 +116,52 @@ public class TamaPhysics : MonoBehaviour
         }
     }
 
-    bool checkLandBigCup()
+    // make sure landing is possible for the given cup.
+    bool CheckLandCup(string cupName)
     {
-        if (kenEuler.z >= 0f && kenEuler.z <= 40f ||
-            kenEuler.z > 360f - 40f && kenEuler.z < 360f)
+        switch (cupName)
         {
-            //Debug.Log("Landed big cup");
-            return true;
+            case "BigCup":
+                return kenEuler.z >= 0f && kenEuler.z <= 40f ||
+                       kenEuler.z > 360f - 40f && kenEuler.z < 360f;
+            case "SmallCup":
+                return true;
+            case "BaseCup":
+                return true;
+            default:
+                return false;
         }
-        return false;
     }
 
+    // restrict to only one launch. only allows one tama to be launched every 1 second
+    IEnumerator TamaLaunchLockAcquire()
+    {
+        if (!isLaunching)
+        {
+            isLaunching = true;
+
+            tamaLaunch();
+
+            yield return new WaitForSeconds(1f);
+            isLaunching = false;
+        }
+    }
+
+    // will only execute if isLaunching is true
     void tamaLaunch()
     {
-        //rb.AddForce(tamaLaunchMultiplier * tamaLaunchAngle.normalized, ForceMode.Impulse);
+        // ask the ken to pause collision for its cup trigger for a bit
+        kenController.pauseCollision(currentCup);
+
+        // reset this stuff
+        kenCollision = false;
+        cupSit = false;
+        currentCup = null;
+
+        // unfreeze tama, allow it to rotate X and Y
+        rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
+
         rb.AddForce(tamaLaunchMultiplier * Vector3.up, ForceMode.Impulse);
         Debug.Log("launched tama from cup: " + (tamaLaunchMultiplier * tamaLaunchAngle.normalized));
     }
-
-
 }

@@ -72,12 +72,14 @@ public class KenController : MonoBehaviour
     // disable collision for half a second
     IEnumerator TempDisableCollision(Collider collider)
     {
-        yield return new WaitForSeconds(0.1f);
-        Debug.Log("temp disable collission");
-        collider.enabled = false;
-        yield return new WaitForSeconds(0.1f);
-        Debug.Log("colision enabled");
-        collider.enabled = true;
-
+        if (collider != null)
+        {
+            yield return new WaitForSeconds(0.1f);
+            //Debug.Log("temp disable collission");
+            collider.enabled = false;
+            yield return new WaitForSeconds(0.1f);
+            //Debug.Log("colision enabled");
+            collider.enabled = true;
+        }
     }
 }
