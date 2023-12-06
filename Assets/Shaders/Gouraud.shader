@@ -15,6 +15,8 @@ Shader "Custom/Lighting/Gouraud"
         [Header(Transparency)]
         _TransparencyColor ("Color", color) = (0., 0., 0., 0.)
         _TransparencyIndex("Index Of Refraction", float) = 0.
+
+		_MainTex ("Texture", 2D) = "white" {}
     }
  
     SubShader {

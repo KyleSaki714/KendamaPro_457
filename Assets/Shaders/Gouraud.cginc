@@ -7,6 +7,7 @@ struct v2f
     float3 worldPos : TEXTCOORD0; // World position of vertex
     float3 worldNormal : NORMAL; // World normal of vertex
     float4 color : COLOR4; // vertex determined color
+    float2 uv : TEXCOORD0; // texture coordinate
 };
 
 half4 _LightColor0;
@@ -77,10 +78,19 @@ v2f MyVertexProgram(appdata_base v)
 
     o.color = color;
 
+    // handle texture
+    o.uv = v.texcoord;
+
     return o;
 }
 
+ // texture we will sample
+sampler2D _MainTex;
+
 fixed4 MyFragmentProgram(v2f i) : SV_Target
 {
-    return i.color;
+    // sample texture and return it
+    fixed4 textureColor = tex2D(_MainTex, i.uv);
+
+    return textureColor * i.color;
 }
