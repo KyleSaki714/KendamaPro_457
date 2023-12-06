@@ -15,6 +15,16 @@ public class TamaPhysics : MonoBehaviour
     bool cupSit = false;
     Collider currentCup;
 
+    [SerializeField]
+    private float bigCupSit = 0.7f;
+    [SerializeField]
+    private float smallCupSit = 0.5f;
+    [SerializeField]
+    private float baseCupSit = 0.5f;
+    [SerializeField]
+    private float spikeSit = 0.3f;
+
+
     Transform kenTransform;
     Vector3 kenEuler;
     KenController kenController;
@@ -72,11 +82,11 @@ public class TamaPhysics : MonoBehaviour
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
 
-        if (cupSit)
+        if (cupSit && currentCup != null && CheckLandCup(currentCup.name))
         {
 
             Transform currCupTransform = currentCup.transform;
-            Vector3 cupOffset = currCupTransform.up.normalized * tamaCupSitOffset;
+            Vector3 cupOffset = currCupTransform.up.normalized * GetCupSitOffset(currentCup.name);
             rb.MovePosition(currCupTransform.position + cupOffset);
             rb.freezeRotation = true;
 
@@ -112,25 +122,34 @@ public class TamaPhysics : MonoBehaviour
             {
                 cupSit = true;
                 currentCup = other;
+                Debug.Log("landed "  + currentCup.name);
             }
         }
     }
 
-    // make sure landing is possible for the given cup.
+    // make sure landing is possible for the given cup. or spike.
+    // TODO: velocity constraint
     bool CheckLandCup(string cupName)
     {
-        switch (cupName)
+        return cupName switch
         {
-            case "BigCup":
-                return kenEuler.z >= 0f && kenEuler.z <= 40f ||
-                       kenEuler.z > 360f - 40f && kenEuler.z < 360f;
-            case "SmallCup":
-                return true;
-            case "BaseCup":
-                return true;
-            default:
-                return false;
-        }
+            "BigCup" => kenEuler.z >= 0f && kenEuler.z <= 40f ||
+                                   kenEuler.z > 360f - 40f && kenEuler.z < 360f,
+            "SmallCup" => true,
+            "BaseCup" => true,
+            _ => false,
+        };
+    }
+
+    float GetCupSitOffset(string cupName)
+    {
+        return cupName switch
+        {
+            "BigCup" => bigCupSit,
+            "SmallCup" => smallCupSit,
+            "BaseCup" => baseCupSit,
+            _ => bigCupSit,
+        };
     }
 
     // restrict to only one launch. only allows one tama to be launched every 1 second

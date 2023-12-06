@@ -1100,6 +1100,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 976014691}
     m_Modifications:
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: baseCupSit
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: smallCupSit
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: tamaLaunchAngle.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchThreshold
       value: 0.1
       objectReference: {fileID: 0}
