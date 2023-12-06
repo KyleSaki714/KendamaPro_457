@@ -82,7 +82,7 @@ public class TamaPhysics : MonoBehaviour
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
 
-        if (cupSit && currentCup != null && CheckLandCup(currentCup.name))
+        if (cupSit && currentCup != null)
         {
 
             Transform currCupTransform = currentCup.transform;
@@ -113,30 +113,56 @@ public class TamaPhysics : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.name == "ken_cups" || collision.gameObject.name == "ken_base")
+        {
+            kenCollision = false;
+        }
+    }
+
     private void OnTriggerStay(Collider other)
     {
         // if tama is in the area of the cup
         if (other.transform.CompareTag("Cup"))
         {
-            if (!isLaunching && kenCollision == true && Mathf.Abs(kenEuler.x) <= cupLandRotThreshold)
+            if (!isLaunching && kenCollision == true)
             {
-                cupSit = true;
                 currentCup = other;
-                Debug.Log("landed "  + currentCup.name);
+                // check ken rotation legal! (cant snap tama upside down)
+
+                cupSit = CheckLandCup(currentCup.name);
+
             }
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // if tama is in the area of the cup
+        if (other.transform.CompareTag("Cup"))
+        {
+
+            cupSit = false;
+            currentCup = null;
+
+            // unfreeze tama, allow it to rotate X and Y
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
+
+        }
+
     }
 
     // make sure landing is possible for the given cup. or spike.
     // TODO: velocity constraint
     bool CheckLandCup(string cupName)
     {
+        // TODO: WARNING: DID NOT IMPLEMENT FLIPPING ACROSS X OF THE KEN YET
         return cupName switch
         {
-            "BigCup" => kenEuler.z >= 0f && kenEuler.z <= 40f ||
-                                   kenEuler.z > 360f - 40f && kenEuler.z < 360f,
-            "SmallCup" => true,
-            "BaseCup" => true,
+            "BigCup" => kenEuler.z >= 0f && kenEuler.z <= 40f || kenEuler.z > 360f - 40f && kenEuler.z < 360f,
+            "SmallCup" => kenEuler.z >= 180f - 40f && kenEuler.z <= 180f + 40f,
+            "BaseCup" => kenEuler.z >= 90f - 40f && kenEuler.z <= 90f + 50f,
             _ => false,
         };
     }
