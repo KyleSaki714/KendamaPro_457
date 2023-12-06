@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 public class KenController : MonoBehaviour
@@ -11,16 +12,28 @@ public class KenController : MonoBehaviour
     private Vector3 _worldPosition;
     private Plane plane = new Plane(Vector3.back, 0);
 
-    private Rigidbody cups;
-    private Rigidbody spikeBase;
+    private MeshCollider cups;
+    private MeshCollider spikeBase;
 
     [SerializeField]
-    private float kenRotationVel = 5f;
+    private float kenRotationVel = 2.5f;
+    [SerializeField]
+    private float rotValue = 0f;
+    [SerializeField]
+    private float zSnap;
+
+    // values for rotation lerp
+    private float oldRotSnapVal;
+    [SerializeField]
+    float lerpDuration = 0.1f;
+    float lerpValue;
 
     private void Start()
     {
-        cups = transform.Find("model/lowpoly_kendama/ken_cups").GetComponent<Rigidbody>();
-        spikeBase = transform.Find("model/lowpoly_kendama/ken_base").GetComponent<Rigidbody>();
+        cups = transform.Find("model/lowpoly_kendama/ken_cups").GetComponent<MeshCollider>();
+        spikeBase = transform.Find("model/lowpoly_kendama/ken_base").GetComponent<MeshCollider>();
+
+        oldRotSnapVal = rotValue;
     }
 
     // Update is called once per frame
@@ -41,16 +54,26 @@ public class KenController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, kenRotationVel));
+            //transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, kenRotationVel));
+            rotValue += kenRotationVel;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, -kenRotationVel));
+            //transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, -kenRotationVel));
+            rotValue -= kenRotationVel;
         }
 
-        float zrot = transform.rotation.eulerAngles.z;
-        
+        // Clamp to prevent value from going to -360 to 0 sometimes
+        rotValue = Mathf.Clamp(rotValue % 360f, -359f, 359f);
+        //float zrot = transform.rotation.eulerAngles.z;
+        zSnap = Mathf.Round(rotValue / 90f) * 90f;
 
+        if (oldRotSnapVal != zSnap)
+        {
+            StartCoroutine(RotateKenByLerping(oldRotSnapVal, zSnap));
+        }
+
+        oldRotSnapVal = zSnap;
 
         if (Input.GetKeyDown(KeyCode.S))
         {
@@ -74,12 +97,33 @@ public class KenController : MonoBehaviour
     {
         if (collider != null)
         {
-            yield return new WaitForSeconds(0.1f);
             //Debug.Log("temp disable collission");
             collider.enabled = false;
+            cups.enabled = false;
+            spikeBase.enabled = false;
             yield return new WaitForSeconds(0.1f);
             //Debug.Log("colision enabled");
             collider.enabled = true;
+            cups.enabled = true;
+            spikeBase.enabled = true;
+
         }
+    }
+
+    // lerp z rotation value for smooth animation
+    // stolen from: https://gamedevbeginner.com/the-right-way-to-lerp-in-unity-with-examples/#right_way_to_use_lerp
+    // thanks man!
+    IEnumerator RotateKenByLerping(float startValue, float endValue)
+    {
+        float timeElapsed = 0;
+        while (timeElapsed < lerpDuration)
+        {
+            lerpValue = Mathf.Lerp(startValue, endValue, timeElapsed / lerpDuration);
+            transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, 0f, lerpValue));
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+        lerpValue = endValue;
+        transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, 0f, lerpValue));
     }
 }

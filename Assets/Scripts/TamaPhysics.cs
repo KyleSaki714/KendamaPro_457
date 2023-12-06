@@ -108,7 +108,7 @@ public class TamaPhysics : MonoBehaviour
         // if tama is in the area of the cup
         if (other.transform.CompareTag("Cup"))
         {
-            if (kenCollision == true && Mathf.Abs(kenEuler.x) <= cupLandRotThreshold)
+            if (!isLaunching && kenCollision == true && Mathf.Abs(kenEuler.x) <= cupLandRotThreshold)
             {
                 cupSit = true;
                 currentCup = other;
