@@ -1030,6 +1030,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 976014691}
     m_Modifications:
+    - target: {fileID: 1450147412982815796, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
+      propertyPath: kenRotationVel
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1450147412982815797, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: m_RootOrder
       value: 1

@@ -20,7 +20,7 @@ public class KenController : MonoBehaviour
     [SerializeField]
     private float rotValue = 0f;
     [SerializeField]
-    private float zSnap;
+    private float newSnap;
 
     // values for rotation lerp
     private float oldRotSnapVal;
@@ -63,17 +63,29 @@ public class KenController : MonoBehaviour
             rotValue -= kenRotationVel;
         }
 
+        
+
         // Clamp to prevent value from going to -360 to 0 sometimes
         rotValue = Mathf.Clamp(rotValue % 360f, -359f, 359f);
         //float zrot = transform.rotation.eulerAngles.z;
-        zSnap = Mathf.Round(rotValue / 90f) * 90f;
+        newSnap = Mathf.Round(rotValue / 90f) * 90f;
 
-        if (oldRotSnapVal != zSnap)
+
+        if (oldRotSnapVal != newSnap)
         {
-            StartCoroutine(RotateKenByLerping(oldRotSnapVal, zSnap));
+            // avoid lerping from 360 to 0
+            if (Mathf.Abs(oldRotSnapVal) == 360f && newSnap == 0f)
+            {
+                // reset rotation to 0
+                transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, 0f, 0f));
+            }
+            else
+            {
+                StartCoroutine(RotateKenByLerping(oldRotSnapVal, newSnap));
+            }
         }
 
-        oldRotSnapVal = zSnap;
+        oldRotSnapVal = newSnap;
 
         if (Input.GetKeyDown(KeyCode.S))
         {
