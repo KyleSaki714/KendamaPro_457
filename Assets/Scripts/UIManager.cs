@@ -1,18 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    Transform canvas;
+    TextMeshProUGUI highScoreText;
+    TextMeshProUGUI currScoreText;
+    TextMeshProUGUI livesText;
+
+    private void Awake()
     {
-        
+        canvas = GameObject.Find("Canvas").transform;
+        highScoreText = canvas.GetChild(0).GetComponent<TextMeshProUGUI>();
+        currScoreText = canvas.GetChild(1).GetComponent<TextMeshProUGUI>();
+        livesText = canvas.GetChild(2).GetComponent<TextMeshProUGUI>();
     }
 
-    // Update is called once per frame
-    void Update()
+    // text changing methods
+
+    // https://youtu.be/Y7GjVFFSMuI?si=B4C-MBbe3vMnkzo-
+    public void IncrementScore(float scoreTotal)
     {
-        
+        currScoreText.text = $"Score: {scoreTotal}";
     }
+    public void IncrementHighScore(float scoreTotal)
+    {
+        highScoreText.text = $"High Score: {scoreTotal}";
+
+    }
+
 }

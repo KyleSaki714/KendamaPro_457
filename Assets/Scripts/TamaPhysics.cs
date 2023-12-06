@@ -2,28 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System;
 
 public class TamaPhysics : MonoBehaviour
 {
+
+    public static event Action<bool> OnInAir;
 
     Rigidbody rb;
 
     bool kenCollision = false; // make sure tama actually collides with the ken
     float cupLandRotThreshold = 40f;
-    [SerializeField]
-    float tamaCupSitOffset = 0.7f;
     bool cupSit = false;
     Collider currentCup;
 
-    [SerializeField]
     private float bigCupSit = 0.7f;
-    [SerializeField]
     private float smallCupSit = 0.5f;
-    [SerializeField]
     private float baseCupSit = 0.5f;
     [SerializeField]
     private float spikeSit = 0.3f;
-
 
     Transform kenTransform;
     Vector3 kenEuler;
@@ -104,20 +101,17 @@ public class TamaPhysics : MonoBehaviour
         lastMousePos = Input.mousePosition;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        OnInAir?.Invoke(false);    
+    }
+
     private void OnCollisionStay(Collision collision)
     {
         // if tama is actually touching the ken
         if (collision.gameObject.name == "ken_cups" ||  collision.gameObject.name == "ken_base")
         {
             kenCollision = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.name == "ken_cups" || collision.gameObject.name == "ken_base")
-        {
-            kenCollision = false;
         }
     }
 
@@ -132,25 +126,8 @@ public class TamaPhysics : MonoBehaviour
                 // check ken rotation legal! (cant snap tama upside down)
 
                 cupSit = CheckLandCup(currentCup.name);
-
             }
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        // if tama is in the area of the cup
-        if (other.transform.CompareTag("Cup"))
-        {
-
-            cupSit = false;
-            currentCup = null;
-
-            // unfreeze tama, allow it to rotate X and Y
-            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
-
-        }
-
     }
 
     // make sure landing is possible for the given cup. or spike.
@@ -202,6 +179,9 @@ public class TamaPhysics : MonoBehaviour
         kenCollision = false;
         cupSit = false;
         currentCup = null;
+        
+        // update the isInAir field of GameManager
+        OnInAir?.Invoke(true);
 
         // unfreeze tama, allow it to rotate X and Y
         rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
