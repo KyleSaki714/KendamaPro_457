@@ -620,6 +620,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e16375747611a4aab476b2ef63328c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isRally: 0
+  secsSinceLaunch: 0
+  tamaIsInAir: 0
+  currentScore: 0
 --- !u!4 &766410330
 Transform:
   m_ObjectHideFlags: 0
@@ -1705,7 +1709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchMultiplier
-      value: 32
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 881194982349900032, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_Name
