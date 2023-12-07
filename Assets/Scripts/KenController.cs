@@ -20,7 +20,9 @@ public class KenController : MonoBehaviour
     [SerializeField]
     private float rotValue = 0f;
     [SerializeField]
-    private float newSnap;
+    private bool isRotating = false;
+    [SerializeField]
+    private float newRotSnapVal;
 
     // values for rotation lerp
     private float oldRotSnapVal;
@@ -39,6 +41,8 @@ public class KenController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ken to mouse
+
         _screenPosition = Input.mousePosition;
 
         Ray ray = Camera.main.ScreenPointToRay(_screenPosition);
@@ -50,51 +54,55 @@ public class KenController : MonoBehaviour
 
         transform.position = _worldPosition;
 
-        //startRotation = new(0f, 90f, 90f);
+        // ken rotation
+
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+        {
+            rotValue = newRotSnapVal;
+            isRotating = false;
+        }
 
         if (Input.GetKey(KeyCode.A))
         {
-            //transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, kenRotationVel));
-            rotValue += kenRotationVel;
+            if (isRotating)
+            {
+                rotValue += kenRotationVel;
+            }
+            else
+            {
+                rotValue += 90f;
+                isRotating = true;
+            }
         }
         if (Input.GetKey(KeyCode.D))
         {
-            //transform.rotation = transform.rotation * Quaternion.Euler(new Vector3(0f, 0f, -kenRotationVel));
-            rotValue -= kenRotationVel;
+            if (isRotating)
+            {
+                rotValue -= kenRotationVel;
+            }
+            else
+            {
+                isRotating = true;
+                rotValue -= 90f;
+            }
         }
-
-        
 
         // Clamp to prevent value from going to -360 to 0 sometimes
         rotValue = Mathf.Clamp(rotValue % 360f, -359f, 359f);
-        //float zrot = transform.rotation.eulerAngles.z;
-        newSnap = Mathf.Round(rotValue / 90f) * 90f;
+        newRotSnapVal = Mathf.Round(rotValue / 90f) * 90f;
 
-
-        if (oldRotSnapVal != newSnap)
+        if (oldRotSnapVal != newRotSnapVal)
         {
             // avoid lerping from 360 to 0
-            if (Mathf.Abs(oldRotSnapVal) == 360f && newSnap == 0f)
+            if (Mathf.Abs(oldRotSnapVal) == 360f && newRotSnapVal == 0f)
             {
                 // reset rotation to 0
                 transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, 0f, 0f));
             }
-            else
-            {
-                StartCoroutine(RotateKenByLerping(oldRotSnapVal, newSnap));
-            }
+            StartCoroutine(RotateKenByLerping(oldRotSnapVal, newRotSnapVal));
         }
-
-        oldRotSnapVal = newSnap;
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            transform.rotation = Quaternion.Euler(new Vector3(-180f, 0f, 0f));
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            transform.rotation = Quaternion.Euler(Vector3.zero);
-        }
+        
+        oldRotSnapVal = newRotSnapVal;
     }
 
     // ask the ken to pause collision for a given collider.

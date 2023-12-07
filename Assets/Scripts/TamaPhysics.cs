@@ -35,8 +35,6 @@ public class TamaPhysics : MonoBehaviour
     float tamaLaunchThreshold = 20f;
     [SerializeField]
     float tamaLaunchMultiplier = 1f;
-    [SerializeField]
-    Vector3 tamaLaunchAngle;
     bool isLaunching;
 
     [SerializeField]
@@ -71,12 +69,6 @@ public class TamaPhysics : MonoBehaviour
     {
         // get kendama euler angles
         kenEuler = kenTransform.rotation.eulerAngles;
-
-        // get launch angle for tama, based on kendama rotation angle (z axis)
-        // add 90 degrees to offset
-        tamaLaunchAngle = new Vector3(Mathf.Sin(kenTransform.rotation.eulerAngles.z),
-                                      Mathf.Cos(kenTransform.rotation.eulerAngles.z),
-                                      0f);
 
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
@@ -207,7 +199,7 @@ public class TamaPhysics : MonoBehaviour
         // unfreeze tama, allow it to rotate X and Y
         rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
 
-        rb.AddForce(tamaLaunchMultiplier * Vector3.up, ForceMode.Impulse);
-        Debug.Log("launched tama from cup: " + (tamaLaunchMultiplier * tamaLaunchAngle.normalized));
+        rb.AddForce(tamaLaunchMultiplier * lastMouseDelta.normalized, ForceMode.Impulse);
+        Debug.Log("launched tama from cup: " + (tamaLaunchMultiplier * lastMouseDelta.normalized));
     }
 }
