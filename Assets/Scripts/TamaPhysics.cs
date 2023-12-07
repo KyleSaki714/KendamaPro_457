@@ -8,6 +8,7 @@ public class TamaPhysics : MonoBehaviour
 {
 
     public static event Action<bool> OnInAir;
+    public static event Action<int> OnCupLand;
 
     Rigidbody rb;
 
@@ -27,9 +28,7 @@ public class TamaPhysics : MonoBehaviour
     KenController kenController;
 
     Vector3 lastMousePos;
-    [SerializeField]
     Vector3 lastMouseDelta;
-    [SerializeField]
     Vector3 mouseDelta;
 
     [SerializeField]
@@ -39,6 +38,9 @@ public class TamaPhysics : MonoBehaviour
     [SerializeField]
     Vector3 tamaLaunchAngle;
     bool isLaunching;
+
+    [SerializeField]
+    bool justLandedCup;
 
 
     private void Awake()
@@ -123,9 +125,16 @@ public class TamaPhysics : MonoBehaviour
             if (!isLaunching && kenCollision == true)
             {
                 currentCup = other;
-                // check ken rotation legal! (cant snap tama upside down)
+                string pinkpantheress = currentCup.name;
 
-                cupSit = CheckLandCup(currentCup.name);
+                // check ken rotation legal! (i.e. cant snap to cup tama upside down)
+                cupSit = CheckLandCup(pinkpantheress);
+
+                if (cupSit && currentCup != null && !justLandedCup)
+                {
+                    OnCupLand?.Invoke(GetCupScore(pinkpantheress));
+                    justLandedCup = true;
+                }
             }
         }
     }
@@ -141,6 +150,17 @@ public class TamaPhysics : MonoBehaviour
             "SmallCup" => kenEuler.z >= 180f - 40f && kenEuler.z <= 180f + 40f,
             "BaseCup" => kenEuler.z >= 90f - 40f && kenEuler.z <= 90f + 50f,
             _ => false,
+        };
+    }
+
+    int GetCupScore(string cupName)
+    {
+        return cupName switch
+        {
+            "BigCup" => 100,
+            "SmallCup" => 150,
+            "BaseCup" => 125,
+            _ => 0,
         };
     }
 
@@ -179,6 +199,7 @@ public class TamaPhysics : MonoBehaviour
         kenCollision = false;
         cupSit = false;
         currentCup = null;
+        justLandedCup = false;
         
         // update the isInAir field of GameManager
         OnInAir?.Invoke(true);

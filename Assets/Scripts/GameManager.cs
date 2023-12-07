@@ -15,8 +15,16 @@ public class GameManager : MonoBehaviour
     public AudioManager AudioManager { get; private set; }
     public UIManager UIManager { get; private set; }
 
+
+    // game logic!
     [SerializeField]
-    private bool tamaInAir = true;
+    bool isRally;
+    [SerializeField]
+    float secsSinceLaunch;
+    [SerializeField]
+    bool tamaIsInAir;
+    [SerializeField]
+    int currentScore;
 
     private void Awake()
     {
@@ -38,27 +46,38 @@ public class GameManager : MonoBehaviour
         ground = GameObject.Find("Ground");
     }
 
+    private void Start()
+    {
+        isRally = false;
+        tamaIsInAir = true;
+        secsSinceLaunch = 0f;
+    }
+
 
     // subscriptions
 
     private void OnEnable()
     {
         TamaPhysics.OnInAir += HandleTamaInAir;
+        TamaPhysics.OnCupLand += HandleScoreChange;
     }
 
     private void OnDisable()
     {
         TamaPhysics.OnInAir -= HandleTamaInAir;
+        TamaPhysics.OnCupLand += HandleScoreChange;
+
     }
 
     void HandleTamaInAir(bool isInAir)
     {
-        tamaInAir = isInAir;
+        tamaIsInAir = isInAir;
     }
 
-    void HandleScoreChange()
+    void HandleScoreChange(int score)
     {
-
+        currentScore += score;
+        UIManager.UpdateScore(currentScore);
     }
 }
 

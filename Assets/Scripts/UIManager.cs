@@ -22,11 +22,11 @@ public class UIManager : MonoBehaviour
     // text changing methods
 
     // https://youtu.be/Y7GjVFFSMuI?si=B4C-MBbe3vMnkzo-
-    public void IncrementScore(float scoreTotal)
+    public void UpdateScore(float scoreTotal)
     {
         currScoreText.text = $"Score: {scoreTotal}";
     }
-    public void IncrementHighScore(float scoreTotal)
+    public void UpdateHighScore(float scoreTotal)
     {
         highScoreText.text = $"High Score: {scoreTotal}";
 
