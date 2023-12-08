@@ -7,13 +7,13 @@ using System;
 public class TamaPhysics : MonoBehaviour
 {
 
-    public static event Action<bool> OnInAir;
-    public static event Action<int> OnCupLand;
+    public static event Action<bool> OnInAir; // ball is currently in air
+    public static event Action<int> OnCupLand; // ball is landed in cup
+    public static event Action OnFail; // ball hits / rests upon collision, failed to land trick
 
     Rigidbody rb;
 
-    bool kenCollision = false; // make sure tama actually collides with the ken
-    float cupLandRotThreshold = 40f;
+    bool kenCollision = false;
     bool cupSit = false;
     Collider currentCup;
 
@@ -39,6 +39,9 @@ public class TamaPhysics : MonoBehaviour
 
     [SerializeField]
     bool justLandedCup;
+    bool failClockLock = false;
+    [SerializeField]
+    float _failClockDuration = 0.1f;
 
 
     private void Awake()
@@ -61,7 +64,8 @@ public class TamaPhysics : MonoBehaviour
         }
         if (Input.GetMouseButtonDown((int) MouseButton.Right))
         {
-            transform.position = kenTransform.position;
+            transform.position = kenTransform.position + Vector3.up * 3f;
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
         }
     }
 
@@ -86,9 +90,6 @@ public class TamaPhysics : MonoBehaviour
             {
                 StartCoroutine(TamaLaunchLockAcquire());
             }
-
-            // check rotation of ken?
-
         }
 
         lastMouseDelta = mouseDelta;
@@ -97,7 +98,11 @@ public class TamaPhysics : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        OnInAir?.Invoke(false);    
+        OnInAir?.Invoke(false);
+        if (collision.gameObject.name == "ken_cups" || collision.gameObject.name == "ken_base")
+        {
+            StartCoroutine(CollisionClock());
+        }
     }
 
     private void OnCollisionStay(Collision collision)
@@ -201,5 +206,40 @@ public class TamaPhysics : MonoBehaviour
 
         rb.AddForce(tamaLaunchMultiplier * lastMouseDelta.normalized, ForceMode.Impulse);
         Debug.Log("launched tama from cup: " + (tamaLaunchMultiplier * lastMouseDelta.normalized));
+    }
+
+    // upon collision, a clock starts.
+    // _failClockDuration describes the time to intercept this clock until the collision is counted as a fail.
+    // cupSit breaks this counter, intercepting the fail. 
+    IEnumerator CollisionClock()
+    {
+        if (!failClockLock)
+        {
+            failClockLock = true;
+            
+            float counter = 0f;
+            while (counter < _failClockDuration)
+            {
+                counter += 0.01f;
+
+                yield return new WaitForSeconds(0.01f);
+                
+                if (cupSit)
+                {
+                    //Debug.Log("Evaded fail");
+                    failClockLock = false;
+                    yield break;
+                }
+
+            }
+
+            //Debug.Log("failed!!!");
+            rb.constraints = RigidbodyConstraints.None;
+            rb.AddForce(Vector3.back * 5f, ForceMode.Impulse);
+            OnFail?.Invoke();
+
+            // wait for a few seconds, then respawn?
+            failClockLock = false;
+        }
     }
 }

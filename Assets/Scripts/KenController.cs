@@ -70,7 +70,7 @@ public class KenController : MonoBehaviour
             }
             else
             {
-                rotValue += 90f;
+                rotValue += 80f;
                 isRotating = true;
             }
         }
@@ -83,7 +83,7 @@ public class KenController : MonoBehaviour
             else
             {
                 isRotating = true;
-                rotValue -= 90f;
+                rotValue -= 80f;
             }
         }
 
@@ -99,7 +99,11 @@ public class KenController : MonoBehaviour
                 // reset rotation to 0
                 transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, 0f, 0f));
             }
-            StartCoroutine(RotateKenByLerping(oldRotSnapVal, newRotSnapVal));
+            else
+            {
+                StartCoroutine(RotateKenByLerping(oldRotSnapVal, newRotSnapVal));
+
+            }
         }
         
         oldRotSnapVal = newRotSnapVal;
