@@ -257,8 +257,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278230015
-  m_fontColor: {r: 1, g: 0.60613334, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -311,7 +311,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -392.7398, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -624,6 +624,7 @@ MonoBehaviour:
   secsSinceLaunch: 0
   tamaIsInAir: 0
   currentScore: 0
+  currentHighScore: 0
 --- !u!4 &766410330
 Transform:
   m_ObjectHideFlags: 0
@@ -1490,8 +1491,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294901765
-  m_fontColor: {r: 0.019819736, g: 0, b: 1, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1544,7 +1545,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -355.0506, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1632,11 +1633,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1450147412982815797, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.139131
+      value: 5.42
       objectReference: {fileID: 0}
     - target: {fileID: 1450147412982815797, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.373047
+      value: -2.91
       objectReference: {fileID: 0}
     - target: {fileID: 1450147412982815797, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1709,7 +1710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: _failClockDuration
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchThreshold
@@ -1729,11 +1730,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 881194982349900033, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.35
+      value: 4.49
       objectReference: {fileID: 0}
     - target: {fileID: 881194982349900033, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.27
+      value: 10.62
       objectReference: {fileID: 0}
     - target: {fileID: 881194982349900033, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_LocalPosition.z

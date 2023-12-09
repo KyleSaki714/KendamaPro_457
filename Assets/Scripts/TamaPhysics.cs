@@ -6,6 +6,7 @@ using System;
 
 public class TamaPhysics : MonoBehaviour
 {
+    bool debugSuspendTama = false;
 
     public static event Action<bool> OnInAir; // ball is currently in air
     public static event Action<int> OnCupLand; // ball is landed in cup
@@ -41,7 +42,7 @@ public class TamaPhysics : MonoBehaviour
     bool justLandedCup;
     bool failClockLock = false;
     [SerializeField]
-    float _failClockDuration = 0.1f;
+    float _failClockDuration = 0.2f;
 
 
     private void Awake()
@@ -67,10 +68,18 @@ public class TamaPhysics : MonoBehaviour
             transform.position = kenTransform.position + Vector3.up * 3f;
             rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            debugSuspendTama = !debugSuspendTama;
+        }
     }
 
     void FixedUpdate()
     {
+        if (debugSuspendTama)
+        {
+            rb.MovePosition(Vector3.up * 4f);
+        }
         // get kendama euler angles
         kenEuler = kenTransform.rotation.eulerAngles;
 

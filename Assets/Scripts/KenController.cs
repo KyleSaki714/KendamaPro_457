@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 public class KenController : MonoBehaviour
 {
 
+    public static event Action<float> OnKenRotating; // ken is now rotating from having stopped. sends the angle
+
     private Vector3 _screenPosition;
     private Vector3 _worldPosition;
     private Plane plane = new Plane(Vector3.back, 0);
@@ -29,6 +31,22 @@ public class KenController : MonoBehaviour
     [SerializeField]
     float lerpDuration = 0.1f;
     float lerpValue;
+
+    [SerializeField]
+    bool trackChange = false; // begin to track change from current angle
+    [SerializeField]
+    float trickMultiplierRot = 0f;
+
+    private void OnEnable()
+    {
+        TamaPhysics.OnInAir += TamaPhysics_OnInAir;
+    }
+
+    private void OnDisable()
+    {
+        TamaPhysics.OnInAir -= TamaPhysics_OnInAir;
+
+    }
 
     private void Start()
     {
@@ -54,6 +72,8 @@ public class KenController : MonoBehaviour
 
         transform.position = _worldPosition;
 
+        // rotation tracking for trick multiplier
+
         // ken rotation
 
         if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
@@ -64,6 +84,11 @@ public class KenController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
+            if (trackChange)
+            {
+                OnKenRotating?.Invoke(rotValue);
+            }
+
             if (isRotating)
             {
                 rotValue += kenRotationVel;
@@ -76,6 +101,11 @@ public class KenController : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.D))
         {
+            if (trackChange)
+            {
+                OnKenRotating?.Invoke(rotValue);
+            }
+
             if (isRotating)
             {
                 rotValue -= kenRotationVel;
@@ -87,7 +117,6 @@ public class KenController : MonoBehaviour
             }
         }
 
-        // Clamp to prevent value from going to -360 to 0 sometimes
         rotValue = Mathf.Clamp(rotValue % 360f, -359f, 359f);
         newRotSnapVal = Mathf.Round(rotValue / 90f) * 90f;
 
@@ -107,6 +136,12 @@ public class KenController : MonoBehaviour
         }
         
         oldRotSnapVal = newRotSnapVal;
+    }
+
+    private void TamaPhysics_OnInAir(bool inAir)
+    {
+        // start tracking rotation
+        trackChange = true;
     }
 
     // ask the ken to pause collision for a given collider.

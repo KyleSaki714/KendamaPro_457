@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 
 public class GameManager : MonoBehaviour
@@ -20,11 +22,22 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     bool isRally;
     [SerializeField]
-    float secsSinceLaunch;
-    [SerializeField]
     bool tamaIsInAir;
-    [SerializeField]
     int currentScore;
+    int currentHighScore;
+
+    // rotations
+    [SerializeField]
+    float currentRot;
+    [SerializeField]
+    float initialRot;
+    [SerializeField]
+    float changeInRot;
+    [SerializeField]
+    int currFullRotations;
+    [SerializeField]
+    bool fullRotPossible;
+
 
     private void Awake()
     {
@@ -50,7 +63,17 @@ public class GameManager : MonoBehaviour
     {
         isRally = false;
         tamaIsInAir = true;
-        secsSinceLaunch = 0f;
+
+        currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        UIManager.UpdateHighScore(currentHighScore);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+        }
     }
 
 
@@ -60,23 +83,68 @@ public class GameManager : MonoBehaviour
     {
         TamaPhysics.OnInAir += HandleTamaInAir;
         TamaPhysics.OnCupLand += HandleScoreChange;
+        TamaPhysics.OnFail += HandleFailTrick;
+        KenController.OnKenRotating += KenController_OnKenRotating;
     }
 
     private void OnDisable()
     {
         TamaPhysics.OnInAir -= HandleTamaInAir;
-        TamaPhysics.OnCupLand += HandleScoreChange;
+        TamaPhysics.OnCupLand -= HandleScoreChange;
+        TamaPhysics.OnFail -= HandleFailTrick;
+        KenController.OnKenRotating -= KenController_OnKenRotating;
+    }
 
+    private void KenController_OnKenRotating(float rotValue)
+    {
+        currentRot = rotValue;
+        if (tamaIsInAir)
+        {
+            changeInRot = Mathf.Abs(currentRot - initialRot);
+            CheckFullRotation();
+        }
+    }
+
+    void CheckFullRotation()
+    {
+        if (changeInRot > 330f)
+        {
+            currFullRotations++;
+            fullRotPossible = false;
+        }
     }
 
     void HandleTamaInAir(bool isInAir)
     {
         tamaIsInAir = isInAir;
+        if (tamaIsInAir)
+        {
+            initialRot = currentRot;
+        }
+        else
+        {
+            changeInRot = 0f;
+            currFullRotations = 0;
+        }
     }
 
     void HandleScoreChange(int score)
     {
         currentScore += score;
+        if (currentScore > currentHighScore)
+        {
+            currentHighScore = currentScore;
+            UIManager.UpdateHighScore(currentHighScore);
+
+            PlayerPrefs.SetInt("HighScore", currentHighScore);
+        }
+
+        UIManager.UpdateScore(currentScore);
+    }
+
+    void HandleFailTrick()
+    {
+        currentScore = 0;
         UIManager.UpdateScore(currentScore);
     }
 }

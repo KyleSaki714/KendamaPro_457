@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     public void UpdateScore(float scoreTotal)
     {
         currScoreText.text = $"Score: {scoreTotal}";
+
     }
     public void UpdateHighScore(float scoreTotal)
     {
