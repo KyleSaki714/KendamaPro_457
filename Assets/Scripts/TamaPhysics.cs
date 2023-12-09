@@ -141,6 +141,8 @@ public class TamaPhysics : MonoBehaviour
                 {
                     OnCupLand?.Invoke(GetCupScore(pinkpantheress));
                     justLandedCup = true;
+
+                    GameManager.Instance.AudioManager.PlayCup();
                 }
             }
         }

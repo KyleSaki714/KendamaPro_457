@@ -475,6 +475,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 585378419}
+  - component: {fileID: 585378420}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -497,6 +498,19 @@ Transform:
   m_Father: {fileID: 766410330}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &585378420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585378418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d969176ebb5c5224d90f18700c5b3cad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cupClip: {fileID: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,10 +635,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isRally: 0
-  secsSinceLaunch: 0
   tamaIsInAir: 0
-  currentScore: 0
-  currentHighScore: 0
+  currentRot: 0
+  initialRot: 0
+  changeInRot: 0
+  currScoreMultiplier: 0
+  fullRotPossible: 0
 --- !u!4 &766410330
 Transform:
   m_ObjectHideFlags: 0
