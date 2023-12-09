@@ -84,10 +84,6 @@ public class KenController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            if (trackChange)
-            {
-                OnKenRotating?.Invoke(rotValue);
-            }
 
             if (isRotating)
             {
@@ -98,14 +94,14 @@ public class KenController : MonoBehaviour
                 rotValue += 80f;
                 isRotating = true;
             }
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
+
             if (trackChange)
             {
                 OnKenRotating?.Invoke(rotValue);
             }
-
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
             if (isRotating)
             {
                 rotValue -= kenRotationVel;
@@ -114,6 +110,11 @@ public class KenController : MonoBehaviour
             {
                 isRotating = true;
                 rotValue -= 80f;
+            }
+
+            if (trackChange)
+            {
+                OnKenRotating?.Invoke(rotValue);
             }
         }
 

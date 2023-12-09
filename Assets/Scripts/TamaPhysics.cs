@@ -66,6 +66,7 @@ public class TamaPhysics : MonoBehaviour
         if (Input.GetMouseButtonDown((int) MouseButton.Right))
         {
             transform.position = kenTransform.position + Vector3.up * 3f;
+            rb.velocity = Vector3.zero;
             rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
         }
         if (Input.GetKeyDown(KeyCode.T))

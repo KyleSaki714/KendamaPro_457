@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     float changeInRot;
     [SerializeField]
-    int currFullRotations;
+    int currScoreMultiplier;
     [SerializeField]
-    bool fullRotPossible;
+    bool fullRotPossible = true;
 
 
     private void Awake()
@@ -107,10 +107,16 @@ public class GameManager : MonoBehaviour
 
     void CheckFullRotation()
     {
-        if (changeInRot > 330f)
+        if (fullRotPossible && changeInRot > 330f)
         {
-            currFullRotations++;
+            currScoreMultiplier++;
             fullRotPossible = false;
+        }
+
+        // resetting full rotation
+        if (currentRot == 0f)
+        {
+            fullRotPossible = true;
         }
     }
 
@@ -123,14 +129,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            currScoreMultiplier = 0;
             changeInRot = 0f;
-            currFullRotations = 0;
         }
     }
 
     void HandleScoreChange(int score)
     {
-        currentScore += score;
+        currentScore += score * (currScoreMultiplier + 1);
         if (currentScore > currentHighScore)
         {
             currentHighScore = currentScore;
@@ -145,7 +151,9 @@ public class GameManager : MonoBehaviour
     void HandleFailTrick()
     {
         currentScore = 0;
-        UIManager.UpdateScore(currentScore);
+
+        // update score to 0
+        UIManager.UpdateScore(0);
     }
 }
 
