@@ -249,6 +249,7 @@ public class TamaPhysics : MonoBehaviour
             rb.constraints = RigidbodyConstraints.None;
             rb.AddForce(Vector3.back * 5f, ForceMode.Impulse);
             OnFail?.Invoke();
+            GameManager.Instance.AudioManager.PlayFail();
 
             // wait for a few seconds, then respawn?
             failClockLock = false;

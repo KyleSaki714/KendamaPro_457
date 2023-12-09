@@ -4,27 +4,34 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    //public List<AudioSource> cupSfx = new List<AudioSource>();
-    //public List<AudioSource> failSfx = new List<AudioSource>();
+    public List<AudioClip> cupSfx = new List<AudioClip>();
+    public List<AudioClip> failSfx = new List<AudioClip>();
+    public AudioClip natureAmbience; // https://freesound.org/people/klankbeeld/sounds/528752/
+    AudioSource bgmPlayer;
+    AudioSource sfxPlayer;
 
-    public AudioClip cupClip;
-    AudioSource cupTest;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        cupTest = gameObject.AddComponent<AudioSource>();
-        cupTest.clip = cupClip;
+        bgmPlayer = transform.GetChild(0).GetComponent<AudioSource>();
+        sfxPlayer = transform.GetChild(1).GetComponent<AudioSource>();
+        //sfxPlayer.spatialBlend = 1;
+    }
+
+    private void Start()
+    {
+        bgmPlayer.clip = natureAmbience;
+        bgmPlayer.Play();
     }
 
     public void PlayCup()
     {
-        cupTest.Play();
-        //cupSfx[Random.Range(0, cupSfx.Count)].Play();
+        sfxPlayer.clip = cupSfx[Random.Range(0, cupSfx.Count)];
+        sfxPlayer.Play();
     }
 
     public void PlayFail()
     {
-
+        sfxPlayer.clip = failSfx[Random.Range(0, failSfx.Count)];
+        sfxPlayer.Play();
     }
 }
