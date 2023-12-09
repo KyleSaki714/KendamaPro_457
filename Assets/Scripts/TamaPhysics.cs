@@ -28,9 +28,12 @@ public class TamaPhysics : MonoBehaviour
     Vector3 kenEuler;
     KenController kenController;
 
-    [SerializeField][Range(0.0f, 10.0f)]
-    float stringLength = 2f;
+    [SerializeField] [Range(0.0f, 20.0f)]
+    float stringLength = 8.29f;
     Transform stringAnchor;
+    [SerializeField]
+    [Range(0.0f, 1.0f)]
+    float stringPullForceMin = 0.1f;
 
     Vector3 lastMousePos;
     Vector3 lastMouseDelta;
@@ -87,16 +90,37 @@ public class TamaPhysics : MonoBehaviour
             rb.MovePosition(Vector3.up * 4f);
         }
 
-        // restrict distance from string
-        Vector3 clampedVector = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
-        rb.MovePosition(stringAnchor.position + clampedVector);
-        Debug.DrawLine(rb.position, stringAnchor.position, Color.white, 0.01f);
-
         // get kendama euler angles
         kenEuler = kenTransform.rotation.eulerAngles;
 
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
+
+        // restrict distance from string
+        Vector3 clampedVector = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
+        
+        // if at the end of the string, add force in the direction of the pull
+        if (clampedVector.magnitude == stringLength)
+        {
+            float stringPullForce = Mathf.Clamp(mouseDelta.magnitude, stringPullForceMin, 1.2f);
+            Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
+            // if ken is still, counterract gravity
+            if (mouseDelta.magnitude == 0f)
+            {
+                //Debug.Log(Physics.gravity);
+                //rb.velocity -= Physics.gravity;
+
+                // clamp velocity
+                float clampedYvel = Mathf.Clamp(rb.velocity.y, -1f, 1f);
+                rb.velocity = new Vector3(rb.velocity.x, clampedYvel, rb.velocity.z);
+            }
+            rb.velocity += directionOfPull;
+        }
+
+        rb.MovePosition(stringAnchor.position + clampedVector);
+        Debug.DrawLine(rb.position, stringAnchor.position, Color.white, 0.01f);
+
+
 
         if (cupSit && currentCup != null)
         {
