@@ -136,6 +136,11 @@ public class TamaPhysics : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        failClockLock = false;
+    }
+
     private void OnTriggerStay(Collider other)
     {
         // if tama is in the area of the cup
@@ -240,6 +245,8 @@ public class TamaPhysics : MonoBehaviour
         if (!failClockLock)
         {
             failClockLock = true;
+
+            Debug.Log("fail clock started");
             
             float counter = 0f;
             while (counter < _failClockDuration)
@@ -264,7 +271,8 @@ public class TamaPhysics : MonoBehaviour
             GameManager.Instance.AudioManager.PlayFail();
 
             // wait for a few seconds, then respawn?
-            failClockLock = false;
+
+            // failClockLock = false moved to OnCollisionExit
         }
     }
 }
