@@ -142,7 +142,7 @@ public class KenController : MonoBehaviour
     private void TamaPhysics_OnInAir(bool inAir)
     {
         // start tracking rotation
-        trackChange = true;
+        trackChange = inAir;
     }
 
     // ask the ken to pause collision for a given collider.

@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
 
         // resetting full rotation
-        if (currentRot == 0f)
+        if (changeInRot == 0f)
         {
             fullRotPossible = true;
         }

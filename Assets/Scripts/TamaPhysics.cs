@@ -111,6 +111,7 @@ public class TamaPhysics : MonoBehaviour
         OnInAir?.Invoke(false);
         if (collision.gameObject.name == "ken_cups" || collision.gameObject.name == "ken_base")
         {
+            kenCollision = true;
             StartCoroutine(CollisionClock());
         }
     }
@@ -238,14 +239,14 @@ public class TamaPhysics : MonoBehaviour
                 
                 if (cupSit)
                 {
-                    //Debug.Log("Evaded fail");
+                    Debug.Log("Evaded fail");
                     failClockLock = false;
                     yield break;
                 }
 
             }
 
-            //Debug.Log("failed!!!");
+            Debug.Log("failed!!!");
             rb.constraints = RigidbodyConstraints.None;
             rb.AddForce(Vector3.back * 5f, ForceMode.Impulse);
             OnFail?.Invoke();
