@@ -121,8 +121,11 @@ public class KenController : MonoBehaviour
         rotValue = Mathf.Clamp(rotValue % 360f, -359f, 359f);
         newRotSnapVal = Mathf.Round(rotValue / 90f) * 90f;
 
+
         if (oldRotSnapVal != newRotSnapVal)
         {
+            Debug.Log("newRotSnapVal: " + newRotSnapVal + " oldRotSnapVal: " + oldRotSnapVal);
+            
             // avoid lerping from 360 to 0
             if (Mathf.Abs(oldRotSnapVal) == 360f && newRotSnapVal == 0f)
             {

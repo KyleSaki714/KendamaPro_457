@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
     {
         isRally = false;
         tamaIsInAir = true;
+        fullRotPossible = true;
 
         currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
         UIManager.UpdateHighScore(currentHighScore);
@@ -113,11 +114,11 @@ public class GameManager : MonoBehaviour
             fullRotPossible = false;
         }
 
-        // resetting full rotation
-        if (changeInRot == 0f)
+        if (Mathf.Abs(currentRot) < 30f)
         {
             fullRotPossible = true;
         }
+
     }
 
     void HandleTamaInAir(bool isInAir)
