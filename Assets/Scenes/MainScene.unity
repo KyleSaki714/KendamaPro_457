@@ -1985,6 +1985,10 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: stringLength
+      value: 4.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchAngle.x
       value: 0
       objectReference: {fileID: 0}

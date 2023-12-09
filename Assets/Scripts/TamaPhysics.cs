@@ -28,6 +28,10 @@ public class TamaPhysics : MonoBehaviour
     Vector3 kenEuler;
     KenController kenController;
 
+    [SerializeField][Range(0.0f, 10.0f)]
+    float stringLength = 2f;
+    Transform stringAnchor;
+
     Vector3 lastMousePos;
     Vector3 lastMouseDelta;
     Vector3 mouseDelta;
@@ -48,6 +52,7 @@ public class TamaPhysics : MonoBehaviour
     private void Awake()
     {
         kenTransform = GameObject.Find("Ken").transform;
+        stringAnchor = GameObject.Find("StringAnchor").transform;
     }
 
     private void Start()
@@ -81,6 +86,12 @@ public class TamaPhysics : MonoBehaviour
         {
             rb.MovePosition(Vector3.up * 4f);
         }
+
+        // restrict distance from string
+        Vector3 clampedVector = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
+        rb.MovePosition(stringAnchor.position + clampedVector);
+        Debug.DrawLine(rb.position, stringAnchor.position, Color.white, 0.01f);
+
         // get kendama euler angles
         kenEuler = kenTransform.rotation.eulerAngles;
 
