@@ -45,7 +45,8 @@ v2f MyVertexProgram(appdata_base v)
 
     // caculate attenuation
     float r = distance(o.worldPos, _WorldSpaceLightPos0);
-    float attenuation = 1.0f / (1.0f + pow(r, 2.0f));
+    float attenuation = 1.0f / (1.0f + pow(r, 1.0f));
+    //attenuation = ;
 
     if (_WorldSpaceLightPos0.w != 0.0) // this is point light
     {
