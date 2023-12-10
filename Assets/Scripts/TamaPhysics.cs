@@ -67,16 +67,6 @@ public class TamaPhysics : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown((int) MouseButton.Left))
-        {
-            StartCoroutine(TamaLaunchLockAcquire());
-        }
-        if (Input.GetMouseButtonDown((int) MouseButton.Right))
-        {
-            transform.position = kenTransform.position + Vector3.up * 3f;
-            rb.velocity = Vector3.zero;
-            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
-        }
         if (Input.GetKeyDown(KeyCode.T))
         {
             debugSuspendTama = !debugSuspendTama;
@@ -104,7 +94,7 @@ public class TamaPhysics : MonoBehaviour
         {
             float stringPullForce = Mathf.Clamp(mouseDelta.magnitude, stringPullForceMin, 1.2f);
             Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
-            // if ken is still, counterract gravity
+            
             if (mouseDelta.magnitude == 0f)
             {
                 //Debug.Log(Physics.gravity);
@@ -118,8 +108,6 @@ public class TamaPhysics : MonoBehaviour
         }
 
         rb.MovePosition(stringAnchor.position + clampedVector);
-        Debug.DrawLine(rb.position, stringAnchor.position, Color.white, 0.01f);
-
 
 
         if (cupSit && currentCup != null)
@@ -290,11 +278,15 @@ public class TamaPhysics : MonoBehaviour
 
             Debug.Log("failed!!!");
             rb.constraints = RigidbodyConstraints.None;
-            rb.AddForce(Vector3.back * 5f, ForceMode.Impulse);
+            rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
             OnFail?.Invoke();
             GameManager.Instance.AudioManager.PlayFail();
 
-            // wait for a few seconds, then respawn?
+            // wait for a few seconds, then restrict z
+            yield return new WaitForSeconds(2f);
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
+            rb.MovePosition(rb.position);
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
 
             // failClockLock = false moved to OnCollisionExit
         }
