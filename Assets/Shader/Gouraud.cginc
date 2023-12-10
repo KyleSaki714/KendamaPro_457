@@ -1,5 +1,6 @@
 #include "UnityCG.cginc"
 
+// Cast shadows based on Curious-George's Shadow Caster: https://forum.unity.com/threads/how-do-i-render-my-own-shadow-map.471293/
 struct v2f
 {
     float4 clipPos : SV_POSITION;
@@ -8,6 +9,7 @@ struct v2f
     float3 worldNormal : NORMAL; // World normal of vertex
     float4 color : COLOR4; // vertex determined color
     float2 uv : TEXCOORD0; // texture coordinate
+    UNITY_FOG_COORDS(1)
 };
 
 half4 _LightColor0;
@@ -81,16 +83,34 @@ v2f MyVertexProgram(appdata_base v)
     // handle texture
     o.uv = v.texcoord;
 
+    // fog
+    UNITY_TRANSFER_FOG(o, o.clipPos);
+
     return o;
 }
 
  // texture we will sample
 sampler2D _MainTex;
 
+// shadow casting components
+sampler2D _ShadowTex;
+float4x4 _ShadowMatrix;
+float _ShadowBias;
+
 fixed4 MyFragmentProgram(v2f i) : SV_Target
 {
     // sample texture and return it
     fixed4 textureColor = tex2D(_MainTex, i.uv);
 
-    return textureColor * i.color;
+    textureColor = textureColor * i.color;
+
+    UNITY_APPLY_FOG(i.fogCoord, textureColor);
+
+    
+    // shadow components
+    float4 shadowCoords = mul(_ShadowMatrix, float4(i.worldPos, 1.0));
+    float lightDepth = 1.0 - tex2Dproj(_ShadowTex, shadowCoords).r;
+    float shadow = (shadowCoords.z - _ShadowBias) < lightDepth ? 1.0 : 0.5;
+
+    return textureColor * shadow;
 }

@@ -35,6 +35,9 @@ Shader "Custom/Lighting/Gouraud"
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
+			// make fog work
+            #pragma multi_compile_fog
+
 			#include "Gouraud.cginc"
 
 			ENDCG
@@ -56,6 +59,9 @@ Shader "Custom/Lighting/Gouraud"
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
+
+			// make fog work
+            #pragma multi_compile_fog
 
 			#include "Gouraud.cginc"
 
