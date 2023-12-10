@@ -10,8 +10,8 @@ public class GameManager : MonoBehaviour
 {
 
     // references
-    private KenController kenController;
-    private GameObject ground;
+    public Transform kenTransform;
+    public Transform environmentContainer;
 
     public static GameManager Instance { get; private set; }
     public AudioManager AudioManager { get; private set; }
@@ -55,8 +55,8 @@ public class GameManager : MonoBehaviour
             UIManager = GetComponentInChildren<UIManager>();
         }
 
-        kenController = GameObject.Find("Ken").GetComponent<KenController>();
-        ground = GameObject.Find("Ground");
+        kenTransform = GameObject.Find("Ken").transform;
+        environmentContainer = GameObject.Find("Environment").transform;
     }
 
     private void Start()

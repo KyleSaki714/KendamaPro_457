@@ -172,6 +172,7 @@ public class TamaPhysics : MonoBehaviour
                     justLandedCup = true;
 
                     GameManager.Instance.AudioManager.PlayCup();
+                    GameManager.Instance.UIManager.ShowSplashText();
                 }
             }
         }
