@@ -27,16 +27,16 @@ public class TamaPhysics : MonoBehaviour
     Transform kenTransform;
     Vector3 kenEuler;
     KenController kenController;
+    bool kenCollisionPaused = false;
+    float _rekcDistOffset = 2.85f;
 
-    [SerializeField] [Range(0.0f, 20.0f)]
-    float stringLength = 8.29f;
+    float stringLength = 8.57f;
     Transform stringAnchor;
-    [SerializeField] [Range(0.0f, 2f)]
     float stringPullForceMin = 0.1f;
-    [SerializeField] [Range(0.0f, 2f)]
     float stringPullForceMax = 1.2f;
-    [SerializeField]
-    float _stringEndThreshold = 1f; // must be within this range to count being at the end of string
+    // must be within this range to count being at the end of string,
+    // this is so force is added for more frames when we yank.
+    float _stringEndThreshold = 1.46f; 
 
     Vector3 lastMousePos;
     Vector3 lastMouseDelta;
@@ -44,19 +44,18 @@ public class TamaPhysics : MonoBehaviour
     Vector3 mouseDelta;
     [SerializeField]
     float mouseSpeed;
-    [SerializeField] [Range(0.0f, 100f)]
-    float yankThreshold = 20.36f; // threshold for yanking the tama from the end of the string.
-    [SerializeField] [Range(0.0f, 100f)]
-    float yankForceMultiplier = 2f; // threshold for yanking the tama from the end of the string.
-    [SerializeField]
+    // pizza slice range of the radius from the tama to stringAnchor where we want yanking to be possible.
+    float yankRange = 20f;
+    // mouse speed threshold for yanking the tama from the end of the string.
+    float yankThreshold = 2.16f;
+    float yankForceMultiplier = 1.9f;
     float tamaSpeed;
-    [SerializeField]
     float _tamaMaxSpeed;
 
     [SerializeField]
-    float tamaLaunchThreshold = 20f;
+    float tamaLaunchThreshold = 2f;
     [SerializeField]
-    float tamaLaunchMultiplier = 1f;
+    float tamaLaunchMultiplier = 40f;
     bool isLaunching;
 
     [SerializeField]
@@ -101,15 +100,11 @@ public class TamaPhysics : MonoBehaviour
         mouseDelta = Input.mousePosition - lastMousePos;
         mouseSpeed = mouseDelta.magnitude;
 
-        if (mouseSpeed != 0f)
-        {
-            Debug.Log(mouseSpeed);
-
-        }
-
         tamaSpeed = rb.velocity.magnitude;
 
         ClampVelocity();
+
+        CheckReeenableKenCollision();
 
         CheckString();
 
@@ -174,46 +169,62 @@ public class TamaPhysics : MonoBehaviour
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, _tamaMaxSpeed);
     }
 
+    // checks to reenable ken collision, after having disabled it previously.
+    // based on distance to ken.
+    void CheckReeenableKenCollision()
+    {
+        // different ideas: distance, y position, timer
+        //float distToKen = Vector3.Distance(rb.position, kenTransform.position);
+
+        if (kenCollisionPaused && rb.position.y > kenTransform.position.y + _rekcDistOffset)
+        {
+            Debug.Log("resume ken collision: " + tamaSpeed);
+            kenController.ResumeAllCollision();
+            kenCollisionPaused = false;
+        }
+    }
+
     void CheckString()
     {
         // restrict distance from string
         Vector3 tamaDistAlongString = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
 
-        // if at the end of the string, 
+        // if at the end of the string
         if (tamaDistAlongString.magnitude > stringLength - _stringEndThreshold)
         {
             float stringPullForce = Mathf.Clamp(mouseSpeed, stringPullForceMin, stringPullForceMax);
-            Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
+            Vector3 tamaToKenDirection = (stringAnchor.position - rb.position).normalized;
+            Vector3 pullForce = tamaToKenDirection * stringPullForce;
+
+            // restrict yank force to only some domain of angles under ken
+            float hangAngle = Vector3.Dot(tamaToKenDirection, Vector3.right) * Mathf.Rad2Deg;
+            bool withinYankRange = hangAngle < yankRange && hangAngle > -yankRange;
+            bool underKen = rb.position.y < kenTransform.position.y;
 
             // when the string is yanked, apply force relative to yank power
-            if (mouseSpeed > yankThreshold && tamaSpeed > 5f)
+            if (withinYankRange && mouseSpeed > yankThreshold && underKen)
             {
-                Vector3 yankForce = directionOfPull * (mouseSpeed * yankForceMultiplier);
+                Vector3 yankForce = pullForce * (mouseSpeed * yankForceMultiplier);
                 rb.AddForce(yankForce, ForceMode.Impulse);
-                Debug.Log("yanked! force applied:" + yankForce);
-            }
+                //Debug.Log("yanked! hangAngle: " + hangAngle);
 
-            // if mouse speed is 0 (player is not moving mouse), and tama is not moving fast
-            else if (mouseSpeed < 10f && tamaSpeed < 5f)
-            {
-                //Debug.Log("tama is still, clamping velocity");
-                // clamp velocity so ball is not jumpy at end of string
-                //float clampedXvel = Mathf.Clamp(rb.velocity.x, -1f, 1f);
-                //float clampedYvel = Mathf.Clamp(rb.velocity.y, -1f, 1f);
-                //rb.velocity = new Vector3(clampedXvel, clampedYvel, rb.velocity.z);
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, 1f);
+                if (kenCollisionPaused == false)
+                {
+                    kenController.PauseAllCollision();
+                    kenCollisionPaused = true;
+                }
             }
 
             // add force, relative to mouse speed, in the direction of the pull
             // (to mimic being at the end of a string)
-            //rb.velocity += directionOfPull;
-            rb.AddForce(directionOfPull, ForceMode.VelocityChange);
+            rb.AddForce(pullForce, ForceMode.VelocityChange);
         }
 
+        // restrict string position
         rb.MovePosition(stringAnchor.position + tamaDistAlongString);
     }
 
-    // check that 
+    // check that we will launch the tama 
     void CheckLaunch()
     {
         // check to launch in the cup
@@ -286,7 +297,7 @@ public class TamaPhysics : MonoBehaviour
     void TamaLaunch()
     {
         // ask the ken to pause collision for its cup trigger for a bit
-        kenController.pauseCollision(currentCup);
+        kenController.pauseCollCollision(currentCup);
 
         // reset this stuff
         kenCollision = false;
