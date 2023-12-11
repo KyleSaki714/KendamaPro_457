@@ -2091,7 +2091,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaSpeed
-      value: 1.1633829
+      value: 20.537273
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: baseCupSit
@@ -2103,11 +2103,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: stringLength
-      value: 10.51
+      value: 8.57
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: _tamaMaxSpeed
-      value: 33.3
+      value: 30.2
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: yankThreshold
@@ -2139,7 +2139,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: yankForceMultiplier
-      value: 1.88
+      value: 1.9
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchMultiplier
@@ -2196,6 +2196,10 @@ PrefabInstance:
     - target: {fileID: 6495959581028329364, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7927253951685294125, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: m_Mass
+      value: 15.58
       objectReference: {fileID: 0}
     - target: {fileID: 7927253951685294125, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_Constraints
