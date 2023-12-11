@@ -19,6 +19,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     List<Sprite> sprites = new List<Sprite>();
 
+    // for drawing the string
+    [SerializeField] private Transform[] points;
+    [SerializeField] private LineController line;
+
     private void Awake()
     {
         canvas = GameObject.Find("Canvas").transform;
@@ -28,6 +32,11 @@ public class UIManager : MonoBehaviour
 
         _splashTextBillboard = transform.GetChild(0).gameObject;
         _splashTextBillboard.SetActive(false);
+    }
+
+    private void Start()
+    {
+        line.SetUpLine(points);
     }
 
     // text changing methods

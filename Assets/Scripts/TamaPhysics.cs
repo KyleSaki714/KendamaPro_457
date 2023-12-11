@@ -31,13 +31,27 @@ public class TamaPhysics : MonoBehaviour
     [SerializeField] [Range(0.0f, 20.0f)]
     float stringLength = 8.29f;
     Transform stringAnchor;
-    [SerializeField]
-    [Range(0.0f, 1.0f)]
+    [SerializeField] [Range(0.0f, 2f)]
     float stringPullForceMin = 0.1f;
+    [SerializeField] [Range(0.0f, 2f)]
+    float stringPullForceMax = 1.2f;
+    [SerializeField]
+    float _stringEndThreshold = 1f; // must be within this range to count being at the end of string
 
     Vector3 lastMousePos;
     Vector3 lastMouseDelta;
+    [SerializeField]
     Vector3 mouseDelta;
+    [SerializeField]
+    float mouseSpeed;
+    [SerializeField] [Range(0.0f, 100f)]
+    float yankThreshold = 20.36f; // threshold for yanking the tama from the end of the string.
+    [SerializeField] [Range(0.0f, 100f)]
+    float yankForceMultiplier = 2f; // threshold for yanking the tama from the end of the string.
+    [SerializeField]
+    float tamaSpeed;
+    [SerializeField]
+    float _tamaMaxSpeed;
 
     [SerializeField]
     float tamaLaunchThreshold = 20f;
@@ -85,45 +99,21 @@ public class TamaPhysics : MonoBehaviour
 
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
+        mouseSpeed = mouseDelta.magnitude;
 
-        // restrict distance from string
-        Vector3 clampedVector = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
-        
-        // if at the end of the string, add force in the direction of the pull
-        if (clampedVector.magnitude == stringLength)
+        if (mouseSpeed != 0f)
         {
-            float stringPullForce = Mathf.Clamp(mouseDelta.magnitude, stringPullForceMin, 1.2f);
-            Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
-            
-            if (mouseDelta.magnitude == 0f)
-            {
-                //Debug.Log(Physics.gravity);
-                //rb.velocity -= Physics.gravity;
+            Debug.Log(mouseSpeed);
 
-                // clamp velocity
-                float clampedYvel = Mathf.Clamp(rb.velocity.y, -1f, 1f);
-                rb.velocity = new Vector3(rb.velocity.x, clampedYvel, rb.velocity.z);
-            }
-            rb.velocity += directionOfPull;
         }
 
-        rb.MovePosition(stringAnchor.position + clampedVector);
+        tamaSpeed = rb.velocity.magnitude;
 
+        ClampVelocity();
 
-        if (cupSit && currentCup != null)
-        {
+        CheckString();
 
-            Transform currCupTransform = currentCup.transform;
-            Vector3 cupOffset = currCupTransform.up.normalized * GetCupSitOffset(currentCup.name);
-            rb.MovePosition(currCupTransform.position + cupOffset);
-            rb.freezeRotation = true;
-
-            // if launched, break out of cup
-            if (!isLaunching && mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
-            {
-                StartCoroutine(TamaLaunchLockAcquire());
-            }
-        }
+        CheckLaunch();
 
         lastMouseDelta = mouseDelta;
         lastMousePos = Input.mousePosition;
@@ -178,6 +168,70 @@ public class TamaPhysics : MonoBehaviour
         }
     }
 
+    // so crazy amounts of forces arent applied
+    void ClampVelocity()
+    {
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, _tamaMaxSpeed);
+    }
+
+    void CheckString()
+    {
+        // restrict distance from string
+        Vector3 tamaDistAlongString = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
+
+        // if at the end of the string, 
+        if (tamaDistAlongString.magnitude > stringLength - _stringEndThreshold)
+        {
+            float stringPullForce = Mathf.Clamp(mouseSpeed, stringPullForceMin, stringPullForceMax);
+            Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
+
+            // when the string is yanked, apply force relative to yank power
+            if (mouseSpeed > yankThreshold && tamaSpeed > 5f)
+            {
+                Vector3 yankForce = directionOfPull * (mouseSpeed * yankForceMultiplier);
+                rb.AddForce(yankForce, ForceMode.Impulse);
+                Debug.Log("yanked! force applied:" + yankForce);
+            }
+
+            // if mouse speed is 0 (player is not moving mouse), and tama is not moving fast
+            else if (mouseSpeed < 10f && tamaSpeed < 5f)
+            {
+                //Debug.Log("tama is still, clamping velocity");
+                // clamp velocity so ball is not jumpy at end of string
+                //float clampedXvel = Mathf.Clamp(rb.velocity.x, -1f, 1f);
+                //float clampedYvel = Mathf.Clamp(rb.velocity.y, -1f, 1f);
+                //rb.velocity = new Vector3(clampedXvel, clampedYvel, rb.velocity.z);
+                rb.velocity = Vector3.ClampMagnitude(rb.velocity, 1f);
+            }
+
+            // add force, relative to mouse speed, in the direction of the pull
+            // (to mimic being at the end of a string)
+            //rb.velocity += directionOfPull;
+            rb.AddForce(directionOfPull, ForceMode.VelocityChange);
+        }
+
+        rb.MovePosition(stringAnchor.position + tamaDistAlongString);
+    }
+
+    // check that 
+    void CheckLaunch()
+    {
+        // check to launch in the cup
+        if (cupSit && currentCup != null)
+        {
+            Transform currCupTransform = currentCup.transform;
+            Vector3 cupOffset = currCupTransform.up.normalized * GetCupSitOffset(currentCup.name);
+            rb.MovePosition(currCupTransform.position + cupOffset);
+            rb.freezeRotation = true;
+
+            // if launched, break out of cup
+            if (!isLaunching && mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
+            {
+                StartCoroutine(TamaLaunchLockAcquire());
+            }
+        }
+    }
+
     // make sure landing is possible for the given cup. or spike.
     // TODO: velocity constraint
     bool CheckLandCup(string cupName)
@@ -221,7 +275,7 @@ public class TamaPhysics : MonoBehaviour
         {
             isLaunching = true;
 
-            tamaLaunch();
+            TamaLaunch();
 
             yield return new WaitForSeconds(1f);
             isLaunching = false;
@@ -229,7 +283,7 @@ public class TamaPhysics : MonoBehaviour
     }
 
     // will only execute if isLaunching is true
-    void tamaLaunch()
+    void TamaLaunch()
     {
         // ask the ken to pause collision for its cup trigger for a bit
         kenController.pauseCollision(currentCup);
