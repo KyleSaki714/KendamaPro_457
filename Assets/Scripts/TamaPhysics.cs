@@ -14,14 +14,16 @@ public class TamaPhysics : MonoBehaviour
 
     Rigidbody rb;
 
+    [SerializeField]
     bool collidingWithKen = false;
+    [SerializeField]
     bool cupSit = false;
+    [SerializeField]
     Collider currentCup;
 
     private float bigCupSit = 0.7f;
     private float smallCupSit = 0.5f;
     private float baseCupSit = 0.5f;
-    [SerializeField]
     private float spikeSit = 0.3f;
 
     Transform kenTransform;
@@ -57,18 +59,16 @@ public class TamaPhysics : MonoBehaviour
     float tamaSpeed;
     float _tamaMaxSpeed = 30f;
 
-    [SerializeField]
-    float tamaLaunchThreshold = 3.3f;
-    [SerializeField]
+    float tamaLaunchThreshold = 2.5f;
     float tamaLaunchMultiplier = 300f;
+    [SerializeField]
     bool isLaunching;
 
     [SerializeField]
     bool justLandedCup;
     bool failClockActive = false;
     int failClockFrameCountStart;
-    [SerializeField]
-    float _failClockDuration = 0.5f;
+    float _failClockDuration = 0.2f;
     [SerializeField]
     int failClockFrameWindow = 40;
 
@@ -118,7 +118,7 @@ public class TamaPhysics : MonoBehaviour
 
         CheckString();
 
-        CheckLaunch();
+        CheckCupSit();
 
         lastMouseDelta = mouseDelta;
         lastMousePos = Input.mousePosition;
@@ -156,6 +156,7 @@ public class TamaPhysics : MonoBehaviour
 
                 // check ken rotation legal! (i.e. cant snap to cup tama upside down)
                 cupSit = CheckLandCup(pinkpantheress);
+                Debug.Log("cupsit = " + cupSit);
 
                 if (cupSit && currentCup != null && !justLandedCup)
                 {
@@ -172,6 +173,7 @@ public class TamaPhysics : MonoBehaviour
     private void OnCollisionExit(Collision collision)
     {
         OnInAir?.Invoke(true);
+        collidingWithKen = false;
     }
 
     // so crazy amounts of forces arent applied
@@ -210,11 +212,11 @@ public class TamaPhysics : MonoBehaviour
         if (failClockActive)
         {
             int framesSinceStart = Time.frameCount - failClockFrameCountStart;
-            Debug.Log("Failclock running... " + framesSinceStart);
+            //Debug.Log("Failclock running... " + framesSinceStart);
 
             if (justLandedCup && framesSinceStart < failClockFrameWindow)
             {
-                Debug.Log("Evaded fail");
+                //Debug.Log("Evaded fail");
                 failClockActive = false;
             }
             else if (framesSinceStart >= failClockFrameWindow)
@@ -279,11 +281,11 @@ public class TamaPhysics : MonoBehaviour
         rb.MovePosition(stringAnchor.position + tamaDistAlongString);
     }
 
-    // check that we will launch the tama 
-    void CheckLaunch()
+    // check that tama sits in cup (snaps like a magnet)
+    void CheckCupSit()
     {
         // check to launch in the cup
-        if (cupSit && currentCup != null)
+        if (cupSit)
         {
             Transform currCupTransform = currentCup.transform;
             Vector3 cupOffset = currCupTransform.up.normalized * GetCupSitOffset(currentCup.name);
@@ -291,7 +293,8 @@ public class TamaPhysics : MonoBehaviour
             rb.freezeRotation = true;
 
             // if launched, break out of cup
-            if (!isLaunching && mouseDelta == Vector3.zero && lastMouseDelta.y > tamaLaunchThreshold)
+            //  mouseDelta == Vector3.zero
+            if (!isLaunching && mouseSpeed < 10f && lastMouseDelta.y > tamaLaunchThreshold)
             {
                 StartCoroutine(TamaLaunchLockAcquire());
             }
@@ -303,9 +306,12 @@ public class TamaPhysics : MonoBehaviour
     bool CheckLandCup(string cupName)
     {
         // TODO: WARNING: DID NOT IMPLEMENT FLIPPING ACROSS X OF THE KEN YET
+        Vector3 kenEuler = kenTransform.rotation.eulerAngles;
+
         return cupName switch
         {
-            "BigCup" => kenEuler.z >= 0f && kenEuler.z <= 40f || kenEuler.z > 360f - 40f && kenEuler.z < 360f,
+            "BigCup" => (kenEuler.z >= 0f - 40f && kenEuler.z <= 0f + 40f) ||
+                        (kenEuler.z >= 360f - 40f && kenEuler.z <= 360f + 40f),
             "SmallCup" => kenEuler.z >= 180f - 40f && kenEuler.z <= 180f + 40f,
             "BaseCup" => kenEuler.z >= 90f - 40f && kenEuler.z <= 90f + 50f,
             _ => false,
