@@ -2015,6 +2015,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 976014691}
     m_Modifications:
+    - target: {fileID: 910430229, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1450147412982815796, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: kenRotationVel
       value: 1.5
@@ -2067,8 +2071,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ken
       objectReference: {fileID: 0}
+    - target: {fileID: 1450147413556719501, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1792041990629059706, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7109284510052941238, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7584629017333316453, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
+      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8749377174782631327, guid: b3eef226de6766b4b99fd512b2546e83, type: 3}
@@ -2091,7 +2107,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaSpeed
-      value: 20.537273
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: baseCupSit
@@ -2112,6 +2128,10 @@ PrefabInstance:
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: yankThreshold
       value: 2.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: _rekcDistOffset
+      value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchAngle.x

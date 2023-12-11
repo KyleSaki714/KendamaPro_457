@@ -155,12 +155,32 @@ public class KenController : MonoBehaviour
         StartCoroutine(TempDisableCollision(coll));
     }
 
-    public void pauseKenCollision()
+    public void PauseAllCollision()
     {
-
+        SetAllCollision(false);
     }
 
-    // disable collision for half a second
+    public void ResumeAllCollision()
+    {
+        SetAllCollision(true);
+    }
+
+    // toggle collision for all collision boxes in the ken.
+    void SetAllCollision(bool isEnabled)
+    {
+        Debug.Log("colision enabled is " + isEnabled);
+        cupsCollider.enabled = isEnabled;
+        baseCollider.enabled = isEnabled;
+
+        BoxCollider[] cupColliders = transform.GetComponentsInChildren<BoxCollider>();
+        
+        foreach (BoxCollider coll in cupColliders)
+        {
+            coll.enabled = isEnabled;
+        }
+    }
+
+    // disable collision for ken and cup coll boxe for half a second
     IEnumerator TempDisableCollision(Collider collider)
     {
         if (collider != null)

@@ -27,16 +27,16 @@ public class TamaPhysics : MonoBehaviour
     Transform kenTransform;
     Vector3 kenEuler;
     KenController kenController;
+    bool kenCollisionPaused = false;
+    float _rekcDistOffset = 2.85f;
 
-    [SerializeField] [Range(0.0f, 20.0f)]
-    float stringLength = 8.29f;
+    float stringLength = 8.57f;
     Transform stringAnchor;
-    [SerializeField] [Range(0.0f, 2f)]
     float stringPullForceMin = 0.1f;
-    [SerializeField] [Range(0.0f, 2f)]
     float stringPullForceMax = 1.2f;
-    [SerializeField]
-    float _stringEndThreshold = 1f; // must be within this range to count being at the end of string
+    // must be within this range to count being at the end of string,
+    // this is so force is added for more frames when we yank.
+    float _stringEndThreshold = 1.46f; 
 
     Vector3 lastMousePos;
     Vector3 lastMouseDelta;
@@ -44,21 +44,18 @@ public class TamaPhysics : MonoBehaviour
     Vector3 mouseDelta;
     [SerializeField]
     float mouseSpeed;
-    [SerializeField] [Range(0.0f, 100f)]
+    // pizza slice range of the radius from the tama to stringAnchor where we want yanking to be possible.
     float yankRange = 20f;
-    [SerializeField] [Range(0.0f, 100f)]
-    float yankThreshold = 20.36f; // threshold for yanking the tama from the end of the string.
-    [SerializeField] [Range(0.0f, 100f)]
-    float yankForceMultiplier = 2f;
-    [SerializeField]
+    // mouse speed threshold for yanking the tama from the end of the string.
+    float yankThreshold = 2.16f;
+    float yankForceMultiplier = 1.9f;
     float tamaSpeed;
-    [SerializeField]
     float _tamaMaxSpeed;
 
     [SerializeField]
-    float tamaLaunchThreshold = 20f;
+    float tamaLaunchThreshold = 2f;
     [SerializeField]
-    float tamaLaunchMultiplier = 1f;
+    float tamaLaunchMultiplier = 40f;
     bool isLaunching;
 
     [SerializeField]
@@ -106,6 +103,8 @@ public class TamaPhysics : MonoBehaviour
         tamaSpeed = rb.velocity.magnitude;
 
         ClampVelocity();
+
+        CheckReeenableKenCollision();
 
         CheckString();
 
@@ -170,6 +169,21 @@ public class TamaPhysics : MonoBehaviour
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, _tamaMaxSpeed);
     }
 
+    // checks to reenable ken collision, after having disabled it previously.
+    // based on distance to ken.
+    void CheckReeenableKenCollision()
+    {
+        // different ideas: distance, y position, timer
+        //float distToKen = Vector3.Distance(rb.position, kenTransform.position);
+
+        if (kenCollisionPaused && rb.position.y > kenTransform.position.y + _rekcDistOffset)
+        {
+            Debug.Log("resume ken collision: " + tamaSpeed);
+            kenController.ResumeAllCollision();
+            kenCollisionPaused = false;
+        }
+    }
+
     void CheckString()
     {
         // restrict distance from string
@@ -194,7 +208,11 @@ public class TamaPhysics : MonoBehaviour
                 rb.AddForce(yankForce, ForceMode.Impulse);
                 //Debug.Log("yanked! hangAngle: " + hangAngle);
 
-                kenController.pauseCollision(currentCup, 0.5f);
+                if (kenCollisionPaused == false)
+                {
+                    kenController.PauseAllCollision();
+                    kenCollisionPaused = true;
+                }
             }
 
             // add force, relative to mouse speed, in the direction of the pull
