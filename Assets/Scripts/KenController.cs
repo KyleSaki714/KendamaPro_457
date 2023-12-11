@@ -168,7 +168,7 @@ public class KenController : MonoBehaviour
     // toggle collision for all collision boxes in the ken.
     void SetAllCollision(bool isEnabled)
     {
-        Debug.Log("colision enabled is " + isEnabled);
+        Debug.Log("ken colision enabled is " + isEnabled);
         cupsCollider.enabled = isEnabled;
         baseCollider.enabled = isEnabled;
 
