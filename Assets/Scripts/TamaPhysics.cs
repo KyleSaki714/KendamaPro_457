@@ -47,7 +47,7 @@ public class TamaPhysics : MonoBehaviour
     [SerializeField] [Range(0.0f, 100f)]
     float yankThreshold = 20.36f; // threshold for yanking the tama from the end of the string.
     [SerializeField] [Range(0.0f, 100f)]
-    float yankForceMultiplier = 2f; // threshold for yanking the tama from the end of the string.
+    float yankForceMultiplier = 2f;
     [SerializeField]
     float tamaSpeed;
     [SerializeField]
@@ -100,12 +100,6 @@ public class TamaPhysics : MonoBehaviour
         // get the current mouse velocity
         mouseDelta = Input.mousePosition - lastMousePos;
         mouseSpeed = mouseDelta.magnitude;
-
-        if (mouseSpeed != 0f)
-        {
-            Debug.Log(mouseSpeed);
-
-        }
 
         tamaSpeed = rb.velocity.magnitude;
 
@@ -186,7 +180,7 @@ public class TamaPhysics : MonoBehaviour
             Vector3 directionOfPull = (stringAnchor.position - rb.position).normalized * stringPullForce;
 
             // when the string is yanked, apply force relative to yank power
-            if (mouseSpeed > yankThreshold && tamaSpeed > 5f)
+            if (mouseSpeed > yankThreshold && tamaSpeed > 5f && rb.position.y < kenTransform.position.y)
             {
                 Vector3 yankForce = directionOfPull * (mouseSpeed * yankForceMultiplier);
                 rb.AddForce(yankForce, ForceMode.Impulse);
@@ -194,7 +188,7 @@ public class TamaPhysics : MonoBehaviour
             }
 
             // if mouse speed is 0 (player is not moving mouse), and tama is not moving fast
-            else if (mouseSpeed < 10f && tamaSpeed < 5f)
+            else if (mouseSpeed < 1f && tamaSpeed < 5f && rb.position.y < kenTransform.position.y)
             {
                 //Debug.Log("tama is still, clamping velocity");
                 // clamp velocity so ball is not jumpy at end of string
