@@ -30,10 +30,13 @@ public class TamaPhysics : MonoBehaviour
     bool kenCollisionPaused = false;
     float _rekcDistOffset = 2.85f;
 
-    float stringLength = 8.57f;
+    float stringLengthShort = 8.57f;
+    [SerializeField]
+    float stringLengthLong = 12.73f;
     Transform stringAnchor;
     float stringPullForceMin = 0.1f;
-    float stringPullForceMax = 1.2f;
+    [SerializeField]
+    float stringPullForceMax = 0.76f;
     // must be within this range to count being at the end of string,
     // this is so force is added for more frames when we yank.
     float _stringEndThreshold = 1.46f; 
@@ -50,12 +53,12 @@ public class TamaPhysics : MonoBehaviour
     float yankThreshold = 2.16f;
     float yankForceMultiplier = 1.9f;
     float tamaSpeed;
-    float _tamaMaxSpeed;
+    float _tamaMaxSpeed = 30f;
 
     [SerializeField]
-    float tamaLaunchThreshold = 2f;
+    float tamaLaunchThreshold = 3.3f;
     [SerializeField]
-    float tamaLaunchMultiplier = 40f;
+    float tamaLaunchMultiplier = 300f;
     bool isLaunching;
 
     [SerializeField]
@@ -186,10 +189,17 @@ public class TamaPhysics : MonoBehaviour
 
     void CheckString()
     {
+        // below ken = shorter string, above ken = longer string (for more airtime)
+        float stringLength = stringLengthShort;
+        if (rb.position.y > kenTransform.position.y + _rekcDistOffset)
+        {
+            stringLength = stringLengthLong;
+        }    
+
         // restrict distance from string
         Vector3 tamaDistAlongString = Vector3.ClampMagnitude(rb.position - stringAnchor.position, stringLength);
 
-        // if at the end of the string
+        bool underKen = rb.position.y < kenTransform.position.y;
         if (tamaDistAlongString.magnitude > stringLength - _stringEndThreshold)
         {
             float stringPullForce = Mathf.Clamp(mouseSpeed, stringPullForceMin, stringPullForceMax);
@@ -199,10 +209,9 @@ public class TamaPhysics : MonoBehaviour
             // restrict yank force to only some domain of angles under ken
             float hangAngle = Vector3.Dot(tamaToKenDirection, Vector3.right) * Mathf.Rad2Deg;
             bool withinYankRange = hangAngle < yankRange && hangAngle > -yankRange;
-            bool underKen = rb.position.y < kenTransform.position.y;
 
             // when the string is yanked, apply force relative to yank power
-            if (withinYankRange && mouseSpeed > yankThreshold && underKen)
+            if (underKen && withinYankRange && mouseSpeed > yankThreshold)
             {
                 Vector3 yankForce = pullForce * (mouseSpeed * yankForceMultiplier);
                 rb.AddForce(yankForce, ForceMode.Impulse);
