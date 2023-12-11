@@ -1636,7 +1636,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 054818c1fb3676c45a9d5c9b9a0052de, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2090,6 +2090,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 976014691}
     m_Modifications:
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: tamaSpeed
+      value: 1.1633829
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: baseCupSit
       value: 0.5
       objectReference: {fileID: 0}
@@ -2099,7 +2103,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: stringLength
-      value: 8.29
+      value: 10.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: _tamaMaxSpeed
+      value: 33.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: yankThreshold
+      value: 2.16
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchAngle.x
@@ -2114,8 +2126,20 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: stringPullForceMax
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: _stringEndThreshold
+      value: 1.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchThreshold
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: yankForceMultiplier
+      value: 1.88
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchMultiplier
