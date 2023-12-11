@@ -14,7 +14,7 @@ public class TamaPhysics : MonoBehaviour
 
     Rigidbody rb;
 
-    bool kenCollision = false;
+    bool collidingWithKen = false;
     bool cupSit = false;
     Collider currentCup;
 
@@ -29,6 +29,8 @@ public class TamaPhysics : MonoBehaviour
     KenController kenController;
     bool kenCollisionPaused = false;
     float _rekcDistOffset = 2.85f;
+
+    bool _freeBall = false;
 
     float stringLengthShort = 8.57f;
     [SerializeField]
@@ -63,9 +65,12 @@ public class TamaPhysics : MonoBehaviour
 
     [SerializeField]
     bool justLandedCup;
-    bool failClockLock = false;
+    bool failClockActive = false;
+    int failClockFrameCountStart;
     [SerializeField]
-    float _failClockDuration = 0.2f;
+    float _failClockDuration = 0.5f;
+    [SerializeField]
+    int failClockFrameWindow = 40;
 
 
     private void Awake()
@@ -107,7 +112,9 @@ public class TamaPhysics : MonoBehaviour
 
         ClampVelocity();
 
-        CheckReeenableKenCollision();
+        CheckReeenableGimmicks();
+
+        CheckFailClock();
 
         CheckString();
 
@@ -122,8 +129,9 @@ public class TamaPhysics : MonoBehaviour
         OnInAir?.Invoke(false);
         if (collision.gameObject.name == "ken_cups" || collision.gameObject.name == "ken_base")
         {
-            kenCollision = true;
-            StartCoroutine(CollisionClock());
+            collidingWithKen = true;
+            failClockActive = true;
+            failClockFrameCountStart = Time.frameCount;
         }
     }
 
@@ -132,13 +140,8 @@ public class TamaPhysics : MonoBehaviour
         // if tama is actually touching the ken
         if (collision.gameObject.name == "ken_cups" ||  collision.gameObject.name == "ken_base")
         {
-            kenCollision = true;
+            collidingWithKen = true;
         }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        failClockLock = false;
     }
 
     private void OnTriggerStay(Collider other)
@@ -146,7 +149,7 @@ public class TamaPhysics : MonoBehaviour
         // if tama is in the area of the cup
         if (other.transform.CompareTag("Cup"))
         {
-            if (!isLaunching && kenCollision == true)
+            if (!isLaunching && collidingWithKen == true)
             {
                 currentCup = other;
                 string pinkpantheress = currentCup.name;
@@ -166,24 +169,67 @@ public class TamaPhysics : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        OnInAir?.Invoke(true);
+    }
+
     // so crazy amounts of forces arent applied
     void ClampVelocity()
     {
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, _tamaMaxSpeed);
     }
 
-    // checks to reenable ken collision, after having disabled it previously.
-    // based on distance to ken.
-    void CheckReeenableKenCollision()
+    // checks to reenable ken collision, after having disabled it previously
+    // checks to reenable the ball to snap to z = 0
+    void CheckReeenableGimmicks()
     {
         // different ideas: distance, y position, timer
         //float distToKen = Vector3.Distance(rb.position, kenTransform.position);
 
         if (kenCollisionPaused && rb.position.y > kenTransform.position.y + _rekcDistOffset)
         {
-            Debug.Log("resume ken collision: " + tamaSpeed);
             kenController.ResumeAllCollision();
             kenCollisionPaused = false;
+        }
+
+        // reenable the ball to snap to z = 0
+        if (_freeBall && rb.position.y < kenTransform.position.y - _rekcDistOffset)
+        {
+            // restrict z
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
+            rb.MovePosition(rb.position);
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
+            
+            _freeBall = false;
+        }
+    }
+
+    void CheckFailClock()
+    {
+        if (failClockActive)
+        {
+            int framesSinceStart = Time.frameCount - failClockFrameCountStart;
+            Debug.Log("Failclock running... " + framesSinceStart);
+
+            if (justLandedCup && framesSinceStart < failClockFrameWindow)
+            {
+                Debug.Log("Evaded fail");
+                failClockActive = false;
+            }
+            else if (framesSinceStart >= failClockFrameWindow)
+            {
+                Debug.Log("failed!!!");
+                rb.constraints = RigidbodyConstraints.None;
+                rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
+                OnFail?.Invoke();
+                GameManager.Instance.AudioManager.PlayFail();
+
+                _freeBall = true;
+
+                failClockActive = false;
+            }
+
         }
     }
 
@@ -309,7 +355,7 @@ public class TamaPhysics : MonoBehaviour
         kenController.pauseCollCollision(currentCup);
 
         // reset this stuff
-        kenCollision = false;
+        collidingWithKen = false;
         cupSit = false;
         currentCup = null;
         justLandedCup = false;
@@ -329,41 +375,41 @@ public class TamaPhysics : MonoBehaviour
     // cupSit breaks this counter, intercepting the fail. 
     IEnumerator CollisionClock()
     {
-        if (!failClockLock)
+        if (!failClockActive && !cupSit)
         {
-            failClockLock = true;
+            failClockActive = true;
 
             Debug.Log("fail clock started");
-            
+
             float counter = 0f;
             while (counter < _failClockDuration)
             {
-                counter += 0.01f;
-
-                yield return new WaitForSeconds(0.01f);
-                
-                if (cupSit)
+                if (cupSit || rb.position.y < kenTransform.position.y)
                 {
                     Debug.Log("Evaded fail");
-                    failClockLock = false;
+                    failClockActive = false;
                     yield break;
                 }
 
+                yield return new WaitForSeconds(0.01f);
+                counter += 0.01f;
+
             }
 
-            Debug.Log("failed!!!");
-            rb.constraints = RigidbodyConstraints.None;
-            rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
-            OnFail?.Invoke();
-            GameManager.Instance.AudioManager.PlayFail();
+            if (failClockActive)
+            {
+                Debug.Log("failed!!!");
+                rb.constraints = RigidbodyConstraints.None;
+                rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
+                OnFail?.Invoke();
+                GameManager.Instance.AudioManager.PlayFail();
 
-            // wait for a few seconds, then restrict z
-            yield return new WaitForSeconds(2f);
-            transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
-            rb.MovePosition(rb.position);
-            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ;
+                _freeBall = true;
 
-            // failClockLock = false moved to OnCollisionExit
+                failClockActive = false;
+
+            }
+
         }
     }
 }
