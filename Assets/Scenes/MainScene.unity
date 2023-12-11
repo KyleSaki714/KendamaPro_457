@@ -2134,6 +2134,10 @@ PrefabInstance:
       value: 2.85
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
+      propertyPath: stringLengthLong
+      value: 12.73
+      objectReference: {fileID: 0}
+    - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchAngle.x
       value: 0
       objectReference: {fileID: 0}
@@ -2147,7 +2151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: stringPullForceMax
-      value: 1.2
+      value: 0.76
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: _stringEndThreshold
@@ -2155,7 +2159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchThreshold
-      value: 2
+      value: 3.3
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: yankForceMultiplier
@@ -2163,7 +2167,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 446162139, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: tamaLaunchMultiplier
-      value: 40
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 881194982349900032, guid: 1502fef9576e8234e860c603bd5f0db5, type: 3}
       propertyPath: m_Name
