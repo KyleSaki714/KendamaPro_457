@@ -132,7 +132,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 437
+        y: 616
         width: 499
         height: 88
       alignment: 0
@@ -153,12 +153,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 350
+        y: 528
         width: 499
         height: 88
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 3}
+      border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -174,7 +174,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 262
+        y: 440
         width: 499
         height: 88
       alignment: 0
@@ -195,7 +195,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 175
+        y: 352
         width: 499
         height: 88
       alignment: 0
@@ -216,7 +216,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 87
+        y: 264
         width: 499
         height: 88
       alignment: 0
@@ -237,6 +237,48 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
+        y: 176
+        width: 499
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 2, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5770740cd0435c4889f357d7dc96209
+      internalID: -373663372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: btn_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 90
+        width: 499
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aad344b8f9c31c14fa700bcaa5880160
+      internalID: -152881948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: btn_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 499
         height: 88
@@ -247,8 +289,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b5770740cd0435c4889f357d7dc96209
-      internalID: -373663372
+      spriteID: fc996917bbe6f21439707a5504659b3f
+      internalID: 603906703
       vertices: []
       indices: 
       edges: []
@@ -269,7 +311,9 @@ TextureImporter:
       btn_sheet_0: -703306773
       btn_sheet_4: -2085388964
       btn_sheet_3: -656501448
+      btn_sheet_6: -152881948
       btn_sheet_5: -373663372
+      btn_sheet_7: 603906703
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
