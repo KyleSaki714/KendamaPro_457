@@ -10,8 +10,6 @@ public class VideoController : MonoBehaviour
     public VideoClip[] videos;
     VideoPlayer vp;
 
-    string[] vidNames = { "tutorial-swingupbigcup2", "rotate_ken", "rotate_basecup", "aroundtheworld" };
-
     private void Awake()
     {
         currVid = 0;
@@ -21,11 +19,14 @@ public class VideoController : MonoBehaviour
 
     public void OnNextButton()
     {
-        currVid++;
-        string currName = vidNames[currVid % vidNames.Length];
-        string currURL = $"https://kylesaki714.github.io/kendamapro_tutorialvids/{currName}.mp4";
-
-        vp.url = currURL;
-        Debug.Log(currURL);
+        if (currVid + 1 == totalVids)
+        {
+            currVid = 0;
+        }
+        else
+        {
+            currVid++;
+        }
+        vp.clip = videos[currVid];
     }
 }
