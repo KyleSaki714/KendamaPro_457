@@ -9,7 +9,7 @@ public class TamaPhysics : MonoBehaviour
     bool debugSuspendTama = false;
 
     public static event Action<bool> OnInAir; // ball is currently in air
-    public static event Action<int> OnCupLand; // ball is landed in cup
+    public static event Action<string> OnCupLand; // ball is landed in cup
     public static event Action OnFail; // ball hits / rests upon collision, failed to land trick
 
     Rigidbody rb;
@@ -60,7 +60,8 @@ public class TamaPhysics : MonoBehaviour
     float _tamaMaxSpeed = 30f;
 
     float tamaLaunchThreshold = 2.5f;
-    float tamaLaunchMultiplier = 300f;
+    [SerializeField]
+    float tamaLaunchMultiplier = 250f;
     [SerializeField]
     bool isLaunching;
 
@@ -160,7 +161,8 @@ public class TamaPhysics : MonoBehaviour
 
                 if (cupSit && currentCup != null && !justLandedCup)
                 {
-                    OnCupLand?.Invoke(GetCupScore(pinkpantheress));
+
+                    OnCupLand?.Invoke(pinkpantheress);
                     justLandedCup = true;
 
                     GameManager.Instance.AudioManager.PlayCup();
