@@ -3,12 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - SphereCollider
+  - PlaneCollider
+  - Tama
+  - Cup
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Tama
   - Water
   - UI
   - 
