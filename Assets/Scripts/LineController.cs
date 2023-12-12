@@ -20,9 +20,12 @@ public class LineController : MonoBehaviour
 
     private void Update()
     {
-        for (int i  = 0; i < points.Length; i++)
+        if (!GameManager.Instance.isPaused)
         {
-            lr.SetPosition(i, points[i].position);
+            for (int i  = 0; i < points.Length; i++)
+            {
+                lr.SetPosition(i, points[i].position);
+            }
         }
     }
 }

@@ -59,6 +59,15 @@ public class KenController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!GameManager.Instance.isPaused)
+        {
+            KenMoving();
+            KenRotate();
+        }
+    }
+
+    void KenMoving()
+    {
         // ken to mouse
 
         _screenPosition = Input.mousePosition;
@@ -71,7 +80,10 @@ public class KenController : MonoBehaviour
         }
 
         transform.position = _worldPosition;
+    }
 
+    void KenRotate()
+    {
         // rotation tracking for trick multiplier
 
         // ken rotation
@@ -124,8 +136,8 @@ public class KenController : MonoBehaviour
 
         if (oldRotSnapVal != newRotSnapVal)
         {
-            Debug.Log("newRotSnapVal: " + newRotSnapVal + " oldRotSnapVal: " + oldRotSnapVal);
-            
+            //Debug.Log("newRotSnapVal: " + newRotSnapVal + " oldRotSnapVal: " + oldRotSnapVal);
+
             // avoid lerping from 360 to 0
             if (Mathf.Abs(oldRotSnapVal) == 360f && newRotSnapVal == 0f)
             {
@@ -138,7 +150,7 @@ public class KenController : MonoBehaviour
 
             }
         }
-        
+
         oldRotSnapVal = newRotSnapVal;
     }
 

@@ -87,14 +87,6 @@ public class TamaPhysics : MonoBehaviour
         kenController = kenTransform.GetComponent<KenController>();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            debugSuspendTama = !debugSuspendTama;
-        }
-    }
-
     void FixedUpdate()
     {
         if (debugSuspendTama)
@@ -157,7 +149,7 @@ public class TamaPhysics : MonoBehaviour
 
                 // check ken rotation legal! (i.e. cant snap to cup tama upside down)
                 cupSit = CheckLandCup(pinkpantheress);
-                Debug.Log("cupsit = " + cupSit);
+                //Debug.Log("cupsit = " + cupSit);
 
                 if (cupSit && currentCup != null && !justLandedCup)
                 {
@@ -223,7 +215,7 @@ public class TamaPhysics : MonoBehaviour
             }
             else if (framesSinceStart >= failClockFrameWindow)
             {
-                Debug.Log("failed!!!");
+                //Debug.Log("failed!!!");
                 rb.constraints = RigidbodyConstraints.None;
                 rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
                 OnFail?.Invoke();
