@@ -1490,7 +1490,7 @@ GameObject:
   - component: {fileID: 1670970044}
   - component: {fileID: 1670970043}
   m_Layer: 5
-  m_Name: QuitButton
+  m_Name: BackButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1546,10 +1546,10 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: -656501448, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
-    m_PressedSprite: {fileID: -656501448, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
-    m_SelectedSprite: {fileID: -656501448, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
-    m_DisabledSprite: {fileID: -1970702072, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
+    m_HighlightedSprite: {fileID: -152881948, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
+    m_PressedSprite: {fileID: -152881948, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
+    m_SelectedSprite: {fileID: 603906703, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
+    m_DisabledSprite: {fileID: 603906703, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -1563,7 +1563,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1829929493}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
-        m_MethodName: OnQuitButton
+        m_MethodName: onMenuButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1593,8 +1593,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1970702072, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: -152881948, guid: bae5fe2d21fa5144f8474a23aa396ade, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2326,7 +2326,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1810381712}
         m_TargetAssemblyTypeName: VideoController, Assembly-CSharp
         m_MethodName: OnNextButton
         m_Mode: 1

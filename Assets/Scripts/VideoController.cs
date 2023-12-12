@@ -27,8 +27,6 @@ public class VideoController : MonoBehaviour
         {
             currVid++;
         }
-        Debug.Log("currvid: " + currVid + " total : " + totalVids);
-        Debug.Log(vp.clip);
         vp.clip = videos[currVid];
     }
 }
