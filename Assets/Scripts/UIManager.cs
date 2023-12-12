@@ -32,9 +32,10 @@ public class UIManager : MonoBehaviour
 
         _splashTextBillboard = transform.GetChild(0).gameObject;
         _splashTextBillboard.SetActive(false);
+
     }
 
-    private void Start()
+    void Start()
     {
         line.SetUpLine(points);
     }
