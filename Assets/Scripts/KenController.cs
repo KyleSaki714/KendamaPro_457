@@ -14,8 +14,8 @@ public class KenController : MonoBehaviour
     private Vector3 _worldPosition;
     private Plane plane = new Plane(Vector3.back, 0);
 
-    private MeshCollider cups;
-    private MeshCollider spikeBase;
+    private MeshCollider cupsCollider;
+    private MeshCollider baseCollider;
 
     [SerializeField]
     private float kenRotationVel = 2.5f;
@@ -50,8 +50,8 @@ public class KenController : MonoBehaviour
 
     private void Start()
     {
-        cups = transform.Find("model/lowpoly_kendama/ken_cups").GetComponent<MeshCollider>();
-        spikeBase = transform.Find("model/lowpoly_kendama/ken_base").GetComponent<MeshCollider>();
+        cupsCollider = transform.Find("model/lowpoly_kendama/ken_cups").GetComponent<MeshCollider>();
+        baseCollider = transform.Find("model/lowpoly_kendama/ken_base").GetComponent<MeshCollider>();
 
         oldRotSnapVal = rotValue;
     }
@@ -150,25 +150,50 @@ public class KenController : MonoBehaviour
 
     // ask the ken to pause collision for a given collider.
     // danger: collider being passed in is assumed to be one of the colliders in ken
-    public void pauseCollision(Collider coll)
+    public void pauseCollCollision(Collider coll)
     {
         StartCoroutine(TempDisableCollision(coll));
     }
 
-    // disable collision for half a second
+    public void PauseAllCollision()
+    {
+        SetAllCollision(false);
+    }
+
+    public void ResumeAllCollision()
+    {
+        SetAllCollision(true);
+    }
+
+    // toggle collision for all collision boxes in the ken.
+    void SetAllCollision(bool isEnabled)
+    {
+        //Debug.Log("ken colision enabled is " + isEnabled);
+        cupsCollider.enabled = isEnabled;
+        baseCollider.enabled = isEnabled;
+
+        BoxCollider[] cupColliders = transform.GetComponentsInChildren<BoxCollider>();
+        
+        foreach (BoxCollider coll in cupColliders)
+        {
+            coll.enabled = isEnabled;
+        }
+    }
+
+    // disable collision for ken and cup coll boxe for half a second
     IEnumerator TempDisableCollision(Collider collider)
     {
         if (collider != null)
         {
             //Debug.Log("temp disable collission");
             collider.enabled = false;
-            cups.enabled = false;
-            spikeBase.enabled = false;
-            yield return new WaitForSeconds(0.1f);
+            cupsCollider.enabled = false;
+            baseCollider.enabled = false;
+            yield return new WaitForSeconds(0.3f);
             //Debug.Log("colision enabled");
             collider.enabled = true;
-            cups.enabled = true;
-            spikeBase.enabled = true;
+            cupsCollider.enabled = true;
+            baseCollider.enabled = true;
 
         }
     }
