@@ -17,14 +17,18 @@ public class GameManager : MonoBehaviour
     public AudioManager AudioManager { get; private set; }
     public UIManager UIManager { get; private set; }
 
+    public bool isPaused = false;
 
     // game logic!
     [SerializeField]
-    bool isRally;
+    bool isChaining;
     [SerializeField]
     bool tamaIsInAir;
     int currentScore;
     int currentHighScore;
+
+    List<string> currentTrickChain;
+
 
     // rotations
     [SerializeField]
@@ -61,19 +65,35 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        isRally = false;
+        isChaining = false;
         tamaIsInAir = true;
         fullRotPossible = true;
 
         currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
         UIManager.UpdateHighScore(currentHighScore);
+
+        currentTrickChain = new List<string>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+            Instance.isPaused = !Instance.isPaused;
+            PauseGame();
+        }
+    }
+
+    // https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/
+    void PauseGame()
+    {
+        if (Instance.isPaused)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
         }
     }
 
@@ -85,7 +105,7 @@ public class GameManager : MonoBehaviour
         TamaPhysics.OnInAir += HandleTamaInAir;
         TamaPhysics.OnCupLand += HandleScoreChange;
         TamaPhysics.OnFail += HandleFailTrick;
-        KenController.OnKenRotating += KenController_OnKenRotating;
+        //KenController.OnKenRotating += KenController_OnKenRotating;
     }
 
     private void OnDisable()
@@ -93,51 +113,57 @@ public class GameManager : MonoBehaviour
         TamaPhysics.OnInAir -= HandleTamaInAir;
         TamaPhysics.OnCupLand -= HandleScoreChange;
         TamaPhysics.OnFail -= HandleFailTrick;
-        KenController.OnKenRotating -= KenController_OnKenRotating;
+        //KenController.OnKenRotating -= KenController_OnKenRotating;
     }
 
-    private void KenController_OnKenRotating(float rotValue)
-    {
-        currentRot = rotValue;
-        if (tamaIsInAir)
-        {
-            changeInRot = Mathf.Abs(currentRot - initialRot);
-            CheckFullRotation();
-        }
-    }
+    //private void KenController_OnKenRotating(float rotValue)
+    //{
+    //    currentRot = rotValue;
+    //    if (tamaIsInAir)
+    //    {
+    //        changeInRot = Mathf.Abs(currentRot - initialRot);
+    //        CheckFullRotation();
+    //    }
+    //}
 
-    void CheckFullRotation()
-    {
-        if (fullRotPossible && changeInRot > 330f)
-        {
-            currScoreMultiplier++;
-            fullRotPossible = false;
-        }
+    //void CheckFullRotation()
+    //{
+    //    if (fullRotPossible && changeInRot > 330f)
+    //    {
+    //        currScoreMultiplier++;
+    //        fullRotPossible = false;
+    //    }
 
-        if (Mathf.Abs(currentRot) < 30f)
-        {
-            fullRotPossible = true;
-        }
+    //    if (Mathf.Abs(currentRot) < 30f)
+    //    {
+    //        fullRotPossible = true;
+    //    }
 
-    }
+    //}
 
     void HandleTamaInAir(bool isInAir)
     {
         tamaIsInAir = isInAir;
-        if (tamaIsInAir)
-        {
-            initialRot = currentRot;
-        }
-        else
-        {
-            currScoreMultiplier = 0;
-            changeInRot = 0f;
-        }
+        //if (tamaIsInAir)
+        //{
+        //    initialRot = currentRot;
+        //}
+        //else
+        //{
+        //    currScoreMultiplier = 0;
+        //    changeInRot = 0f;
+        //}
     }
 
-    void HandleScoreChange(int score)
+    void HandleScoreChange(string cupName)
     {
-        currentScore += score * (currScoreMultiplier + 1);
+        int score = GetCupScore(cupName);
+
+        currentTrickChain.Add(cupName);
+
+        currScoreMultiplier++;
+
+        currentScore += score * (currScoreMultiplier);
         if (currentScore > currentHighScore)
         {
             currentHighScore = currentScore;
@@ -147,11 +173,27 @@ public class GameManager : MonoBehaviour
         }
 
         UIManager.UpdateScore(currentScore);
+        UIManager.UpdateTrickChain(currentTrickChain, currScoreMultiplier);
+    }
+
+    int GetCupScore(string cupName)
+    {
+        return cupName switch
+        {
+            "BigCup" => 100,
+            "SmallCup" => 150,
+            "BaseCup" => 125,
+            _ => 0,
+        };
     }
 
     void HandleFailTrick()
     {
+
         currentScore = 0;
+        currScoreMultiplier = 0;
+        currentTrickChain.Clear();
+        UIManager.UpdateTrickChain(currentTrickChain, currScoreMultiplier);
 
         // update score to 0
         UIManager.UpdateScore(0);

@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     TextMeshProUGUI highScoreText;
     TextMeshProUGUI currScoreText;
     TextMeshProUGUI livesText;
+    TextMeshProUGUI chainText;
 
     GameObject _splashTextBillboard;
     [SerializeField]
@@ -29,6 +30,7 @@ public class UIManager : MonoBehaviour
         highScoreText = canvas.GetChild(0).GetComponent<TextMeshProUGUI>();
         currScoreText = canvas.GetChild(1).GetComponent<TextMeshProUGUI>();
         livesText = canvas.GetChild(2).GetComponent<TextMeshProUGUI>();
+        chainText = canvas.GetChild(3).GetComponent<TextMeshProUGUI>();
 
         _splashTextBillboard = transform.GetChild(0).gameObject;
         _splashTextBillboard.SetActive(false);
@@ -52,6 +54,42 @@ public class UIManager : MonoBehaviour
     {
         highScoreText.text = $"High Score: {scoreTotal}";
 
+    }
+
+    public void UpdateTrickChain(List<string> tricks, int trickMultiplier)
+    {
+        string res = "[ ";
+
+        if (tricks.Count > 0)
+        {
+            res += tricks[0] + " ( " + GetCupScore(tricks[0]) + " ) ";
+
+        }
+
+        if (tricks.Count > 1) 
+        {
+            for (int i = 1;  i < tricks.Count; i++)
+            {
+                res += "+ " + tricks[i] + " ( " + GetCupScore(tricks[i]) + " ) ";
+            }
+
+        }
+
+        res += "] x " + trickMultiplier;
+
+        chainText.text = res;
+
+    }
+
+    int GetCupScore(string cupName)
+    {
+        return cupName switch
+        {
+            "BigCup" => 100,
+            "SmallCup" => 150,
+            "BaseCup" => 125,
+            _ => 0,
+        };
     }
 
     public void ShowSplashText()

@@ -9,7 +9,7 @@ public class TamaPhysics : MonoBehaviour
     bool debugSuspendTama = false;
 
     public static event Action<bool> OnInAir; // ball is currently in air
-    public static event Action<int> OnCupLand; // ball is landed in cup
+    public static event Action<string> OnCupLand; // ball is landed in cup
     public static event Action OnFail; // ball hits / rests upon collision, failed to land trick
 
     Rigidbody rb;
@@ -60,7 +60,8 @@ public class TamaPhysics : MonoBehaviour
     float _tamaMaxSpeed = 30f;
 
     float tamaLaunchThreshold = 2.5f;
-    float tamaLaunchMultiplier = 300f;
+    [SerializeField]
+    float tamaLaunchMultiplier = 250f;
     [SerializeField]
     bool isLaunching;
 
@@ -84,14 +85,6 @@ public class TamaPhysics : MonoBehaviour
         lastMousePos = Input.mousePosition;
         rb = GetComponent<Rigidbody>();
         kenController = kenTransform.GetComponent<KenController>();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            debugSuspendTama = !debugSuspendTama;
-        }
     }
 
     void FixedUpdate()
@@ -156,11 +149,12 @@ public class TamaPhysics : MonoBehaviour
 
                 // check ken rotation legal! (i.e. cant snap to cup tama upside down)
                 cupSit = CheckLandCup(pinkpantheress);
-                Debug.Log("cupsit = " + cupSit);
+                //Debug.Log("cupsit = " + cupSit);
 
                 if (cupSit && currentCup != null && !justLandedCup)
                 {
-                    OnCupLand?.Invoke(GetCupScore(pinkpantheress));
+
+                    OnCupLand?.Invoke(pinkpantheress);
                     justLandedCup = true;
 
                     GameManager.Instance.AudioManager.PlayCup();
@@ -221,7 +215,7 @@ public class TamaPhysics : MonoBehaviour
             }
             else if (framesSinceStart >= failClockFrameWindow)
             {
-                Debug.Log("failed!!!");
+                //Debug.Log("failed!!!");
                 rb.constraints = RigidbodyConstraints.None;
                 rb.AddForce(Vector3.forward * 5f * Mathf.Round(UnityEngine.Random.Range(-1, 1)), ForceMode.Impulse);
                 OnFail?.Invoke();
