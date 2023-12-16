@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: lowres_galaxy
+  m_Name: tama_galaxy
   m_Shader: {fileID: 4800000, guid: 7133c17f03939e747be6ff16f2b75d98, type: 3}
   m_ShaderKeywords: _GLOSSYREFLECTIONS_OFF
   m_LightmapFlags: 4
