@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public AudioManager AudioManager { get; private set; }
     public UIManager UIManager { get; private set; }
 
-    public bool isPaused = false;
+    public bool isPaused { get; private set; }
 
     // game logic!
     [SerializeField]
@@ -79,22 +79,25 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Instance.isPaused = !Instance.isPaused;
             PauseGame();
         }
     }
 
     // https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/
-    void PauseGame()
+    public void PauseGame()
     {
+        Instance.isPaused = !Instance.isPaused;
         if (Instance.isPaused)
         {
             Time.timeScale = 0f;
+            Instance.UIManager.ShowPauseMenu();
         }
         else
         {
             Time.timeScale = 1f;
+            Instance.UIManager.HidePauseMenu();
         }
+
     }
 
 

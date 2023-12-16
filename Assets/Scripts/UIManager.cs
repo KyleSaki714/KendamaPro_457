@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     TextMeshProUGUI livesText;
     TextMeshProUGUI chainText;
 
+    GameObject PauseMenu;
+
     GameObject _splashTextBillboard;
     [SerializeField]
     private float fadeSpeed = 0.31f;
@@ -31,6 +33,8 @@ public class UIManager : MonoBehaviour
         currScoreText = canvas.GetChild(1).GetComponent<TextMeshProUGUI>();
         livesText = canvas.GetChild(2).GetComponent<TextMeshProUGUI>();
         chainText = canvas.GetChild(3).GetComponent<TextMeshProUGUI>();
+        PauseMenu = canvas.GetChild(4).gameObject;
+        PauseMenu.SetActive(false);
 
         _splashTextBillboard = transform.GetChild(0).gameObject;
         _splashTextBillboard.SetActive(false);
@@ -90,6 +94,15 @@ public class UIManager : MonoBehaviour
             "BaseCup" => 125,
             _ => 0,
         };
+    }
+
+    public void ShowPauseMenu()
+    {
+        PauseMenu.SetActive(true);
+    }
+    public void HidePauseMenu()
+    {
+        PauseMenu.SetActive(false);
     }
 
     public void ShowSplashText()
